@@ -15,7 +15,7 @@ $disciplines = [];
 $students = [];
 if ($selectedGroup) {
     $disciplines = $dbHelper->getDisciplinesByGroup($teacherId, $selectedGroup);
-    echo $disciplines[0];
+
     if ($selectedDiscipline) {
         $students = $dbHelper->getStudentsByGroup($selectedGroup);
     }

@@ -9,6 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     if ($teacher && password_verify($password, $teacher['Пароль'])) {
         $_SESSION['user_id'] = $teacher['ID'];
+        $_SESSION['login'] = $teacher['Логин'];
         $_SESSION['user_name'] = $teacher['ФИО'];
         $_SESSION['user_role'] = $teacher['Роль'] ?? 'teacher';
         
