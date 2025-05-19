@@ -16,7 +16,7 @@ class loadContext extends load {
 
     public static function select(): array {
         $allLoads = [];
-        $sql = "SELECT * FROM `Нагрузки`;";
+        $sql = "SELECT * FROM `Workload`;";
         $connection = Connection::openConnection();
         $result = Connection::query($sql, $connection);
         while ($row = $result->fetch_assoc()) {
@@ -27,7 +27,7 @@ class loadContext extends load {
     }
 
     public function add(): void {
-        $sql = "INSERT INTO `Нагрузки`(`ДисциплинаId`, `ГруппаId`, `ПреподавательId`, `Часы`) VALUES (?, ?, ?, ?)";
+        $sql = "INSERT INTO `Workload`(`DisciplineID`, `GroupID`, `TeacherID`, `Hours`) VALUES (?, ?, ?, ?)";
         $connection = Connection::openConnection();
         $stmt = $connection->prepare($sql);
         $stmt->bind_param('iiii',
@@ -36,13 +36,14 @@ class loadContext extends load {
             $this->teacherId,
             $this->Hours
         );
-        $stmt->execute();
+        $result = $stmt->execute();
         $stmt->close();
         Connection::closeConnection($connection);
+        return $result;
     }
 
     public function update(): void {
-        $sql = "UPDATE `Нагрузки` SET `ДисциплинаId` = ?, `ГруппаId` = ?, `ПреподавательId` = ?, `Часы` = ? WHERE `id` = ?";
+        $sql = "UPDATE `Workload` SET `DisciplineID` = ?, `GroupID` = ?, `TeacherID` = ?, `Hours` = ? WHERE `ID` = ?";
         $connection = Connection::openConnection();
         $stmt = $connection->prepare($sql);
         $stmt->bind_param('iiiii',
@@ -52,19 +53,21 @@ class loadContext extends load {
             $this->Hours,
             $this->id
         );
-        $stmt->execute();
+        $result = $stmt->execute();
         $stmt->close();
         Connection::closeConnection($connection);
+        return $result;
     }
 
-    public function delete(): void {
-        $sql = "DELETE FROM `Нагрузки` WHERE `id` = ?";
+    public function delete($delId): void {
+        $sql = "DELETE FROM `Workload` WHERE `ID` = ?";
         $connection = Connection::openConnection();
         $stmt = $connection->prepare($sql);
-        $stmt->bind_param('i', $this->id);
-        $stmt->execute();
+        $stmt->bind_param('i', $this->$delID);
+        $result = $stmt->execute();
         $stmt->close();
         Connection::closeConnection($connection);
+        return $result;
     }
 }
 ?>

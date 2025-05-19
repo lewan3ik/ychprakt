@@ -13,7 +13,7 @@ class disciplineContext extends discipline {
 
     public static function select(): array {
         $allDisciplines = [];
-        $sql = "SELECT * FROM `Дисциплины`;";
+        $sql = "SELECT * FROM `Discipline`;";
         $connection = Connection::openConnection();
         $result = Connection::query($sql, $connection);
         while ($row = $result->fetch_assoc()) {
@@ -24,33 +24,36 @@ class disciplineContext extends discipline {
     }
 
     public function add(): void {
-        $sql = "INSERT INTO `Дисциплины`(`Название`) VALUES (?)";
+        $sql = "INSERT INTO `Discipline`(`Name`) VALUES (?)";
         $connection = Connection::openConnection();
         $stmt = $connection->prepare($sql);
         $stmt->bind_param('s', $this->name);
-        $stmt->execute();
+        $result = $stmt->execute();
         $stmt->close();
         Connection::closeConnection($connection);
+        return $result;
     }
 
     public function update(): void {
-        $sql = "UPDATE `Дисциплины` SET `Название` = ? WHERE `id` = ?";
+        $sql = "UPDATE `Discipline` SET `Name` = ? WHERE `ID` = ?";
         $connection = Connection::openConnection();
         $stmt = $connection->prepare($sql);
         $stmt->bind_param('si', $this->name, $this->id);
-        $stmt->execute();
+        $result = $stmt->execute();
         $stmt->close();
         Connection::closeConnection($connection);
+        return $result;
     }
 
-    public function delete(): void {
-        $sql = "DELETE FROM `Дисциплины` WHERE `id` = ?";
+    public function delete($delId): void {
+        $sql = "DELETE FROM `Discipline` WHERE `ID` = ?";
         $connection = Connection::openConnection();
         $stmt = $connection->prepare($sql);
-        $stmt->bind_param('i', $this->id);
-        $stmt->execute();
+        $stmt->bind_param('i', $this->$delId);
+        $result = $stmt->execute();
         $stmt->close();
         Connection::closeConnection($connection);
+        return $result;
     }
 }
 ?>

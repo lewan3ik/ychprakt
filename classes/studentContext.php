@@ -19,7 +19,7 @@ class studentContext extends students {
 
     public static function select(): array {
         $allStudents = [];
-        $sql = "SELECT * FROM `Студенты`;";
+        $sql = "SELECT * FROM `Student`;";
         $connection = Connection::openConnection();
         $result = Connection::query($sql, $connection);
         while ($row = $result->fetch_assoc()) {
@@ -30,7 +30,7 @@ class studentContext extends students {
     }
 
     public function add(): void {
-        $sql = "INSERT INTO `Студенты`(`ФИО`, `Логин`, `Пароль`, `ДатаОтчисления`, `ГруппаId`) VALUES (?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO `Student`(`FulName`, `login`, `password`, `ExpulsionDate`, `GroupID`) VALUES (?, ?, ?, ?, ?)";
         $connection = Connection::openConnection();
         $stmt = $connection->prepare($sql);
         $fullName = $this->lastName . ' ' . $this->firstName . ' ' . $this->subName;
@@ -41,13 +41,14 @@ class studentContext extends students {
             $this->dateKick,
             $this->groupId
         );
-        $stmt->execute();
+        $result = $stmt->execute();
         $stmt->close();
         Connection::closeConnection($connection);
+        return $result;
     }
 
     public function update(): void {
-        $sql = "UPDATE `Студенты` SET `ФИО` = ?, `Логин` = ?, `Пароль` = ?, `ДатаОтчисления` = ?, `ГруппаId` = ? WHERE `id` = ?";
+        $sql = "UPDATE `Student` SET `FulName` = ?, `login` = ?, `password` = ?, `ExpulsionDate` = ?, `GroupID` = ? WHERE `ID` = ?";
         $connection = Connection::openConnection();
         $stmt = $connection->prepare($sql);
         $fullName = $this->lastName . ' ' . $this->firstName . ' ' . $this->subName;
@@ -59,19 +60,21 @@ class studentContext extends students {
             $this->groupId,
             $this->id
         );
-        $stmt->execute();
+        $result = $stmt->execute();
         $stmt->close();
         Connection::closeConnection($connection);
+        return $result;
     }
 
-    public function delete(): void {
-        $sql = "DELETE FROM `Студенты` WHERE `id` = ?";
+    public function delete($delId): void {
+        $sql = "DELETE FROM `Student` WHERE `ID` = ?";
         $connection = Connection::openConnection();
         $stmt = $connection->prepare($sql);
-        $stmt->bind_param('i', $this->id);
-        $stmt->execute();
+        $stmt->bind_param('i', $this->$delId);
+        $result = $stmt->execute();
         $stmt->close();
         Connection::closeConnection($connection);
+        return $result;
     }
 }
 ?>

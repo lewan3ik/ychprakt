@@ -13,7 +13,7 @@ class groupContext extends group {
 
     public static function select(): array {
         $allGroups = [];
-        $sql = "SELECT * FROM `Группы`;";
+        $sql = "SELECT * FROM `Group`;";
         $connection = Connection::openConnection();
         $result = Connection::query($sql, $connection);
         while ($row = $result->fetch_assoc()) {
@@ -24,33 +24,36 @@ class groupContext extends group {
     }
 
     public function add(): void {
-        $sql = "INSERT INTO `Группы`(`Название`) VALUES (?)";
+        $sql = "INSERT INTO `Group`(`Name`) VALUES (?)";
         $connection = Connection::openConnection();
         $stmt = $connection->prepare($sql);
         $stmt->bind_param('s', $this->name);
-        $stmt->execute();
+        $result = $stmt->execute();
         $stmt->close();
         Connection::closeConnection($connection);
+        return $result;
     }
 
     public function update(): void {
-        $sql = "UPDATE `Группы` SET `Название` = ? WHERE `id` = ?";
+        $sql = "UPDATE `Group` SET `Name` = ? WHERE `ID` = ?";
         $connection = Connection::openConnection();
         $stmt = $connection->prepare($sql);
         $stmt->bind_param('si', $this->name, $this->id);
-        $stmt->execute();
+        $result = $stmt->execute();
         $stmt->close();
         Connection::closeConnection($connection);
+        return $result;
     }
 
-    public function delete(): void {
-        $sql = "DELETE FROM `Группы` WHERE `id` = ?";
+    public function delete($delId): void {
+        $sql = "DELETE FROM `Group` WHERE `ID` = ?";
         $connection = Connection::openConnection();
         $stmt = $connection->prepare($sql);
-        $stmt->bind_param('i', $this->id);
-        $stmt->execute();
+        $stmt->bind_param('i', $this->delId);
+        $result = $stmt->execute();
         $stmt->close();
         Connection::closeConnection($connection);
+        return $result;
     }
 }
 ?>

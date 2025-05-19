@@ -15,7 +15,7 @@ class markContext extends mark {
 
     public static function select(): array {
         $allMarks = [];
-        $sql = "SELECT * FROM `Оценки`;";
+        $sql = "SELECT * FROM `Grade`;";
         $connection = Connection::openConnection();
         $result = Connection::query($sql, $connection);
         while ($row = $result->fetch_assoc()) {
@@ -26,7 +26,7 @@ class markContext extends mark {
     }
 
     public function add(): void {
-        $sql = "INSERT INTO `Оценки`(`СтудентId`, `УрокId`, `Оценка`) VALUES (?, ?, ?)";
+        $sql = "INSERT INTO `Grade`(`StudentID`, `LessonID`, `Grade`) VALUES (?, ?, ?)";
         $connection = Connection::openConnection();
         $stmt = $connection->prepare($sql);
         $stmt->bind_param('iis',
@@ -34,13 +34,14 @@ class markContext extends mark {
             $this->leassonId,
             $this->mark
         );
-        $stmt->execute();
+        $result = $stmt->execute();
         $stmt->close();
         Connection::closeConnection($connection);
+        return $result;
     }
 
     public function update(): void {
-        $sql = "UPDATE `Оценки` SET `СтудентId` = ?, `УрокId` = ?, `Оценка` = ? WHERE `id` = ?";
+        $sql = "UPDATE `Grade` SET `StudentID` = ?, `LessonID` = ?, `Grade` = ? WHERE `ID` = ?";
         $connection = Connection::openConnection();
         $stmt = $connection->prepare($sql);
         $stmt->bind_param('iisi',
@@ -49,19 +50,21 @@ class markContext extends mark {
             $this->mark,
             $this->id
         );
-        $stmt->execute();
+        $result = $stmt->execute();
         $stmt->close();
         Connection::closeConnection($connection);
+        return $result;
     }
 
-    public function delete(): void {
-        $sql = "DELETE FROM `Оценки` WHERE `id` = ?";
+    public function delete($delId): void {
+        $sql = "DELETE FROM `Grade` WHERE `ID` = ?";
         $connection = Connection::openConnection();
         $stmt = $connection->prepare($sql);
-        $stmt->bind_param('i', $this->id);
-        $stmt->execute();
+        $stmt->bind_param('i', $this->$delId);
+        $result = $stmt->execute();
         $stmt->close();
         Connection::closeConnection($connection);
+        return $result;
     }
 }
 ?>
