@@ -2,10 +2,10 @@
 -- version 5.2.0
 -- https://www.phpmyadmin.net/
 --
--- Хост: 127.0.0.1:3306
--- Время создания: Май 16 2025 г., 07:48
--- Версия сервера: 5.7.39
--- Версия PHP: 8.1.9
+-- Хост: 127.0.0.1:3307
+-- Время создания: Май 19 2025 г., 12:31
+-- Версия сервера: 8.0.30
+-- Версия PHP: 7.2.34
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -28,10 +28,10 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `Консультация` (
-  `ID` int(11) NOT NULL,
+  `ID` int NOT NULL,
   `Дата` date NOT NULL,
-  `ГруппаID` int(11) NOT NULL,
-  `ПреподавательID` int(11) NOT NULL
+  `ГруппаID` int NOT NULL,
+  `ПреподавательID` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -62,15 +62,15 @@ INSERT INTO `Консультация` (`ID`, `Дата`, `ГруппаID`, `П�
 --
 
 CREATE TABLE `Нагрузка` (
-  `ID` int(11) NOT NULL,
-  `ПреподавательID` int(11) NOT NULL,
-  `ДисциплинаID` int(11) NOT NULL,
-  `ГруппаID` int(11) NOT NULL,
-  `ЧасыЛекций` int(11) DEFAULT '0',
-  `ЧасыПрактик` int(11) DEFAULT '0',
-  `ЧасыКонсультаций` int(11) DEFAULT '0',
-  `ЧасыКурсового` int(11) DEFAULT '0',
-  `ЧасыЭкзамена` int(11) DEFAULT '0'
+  `ID` int NOT NULL,
+  `ПреподавательID` int NOT NULL,
+  `ДисциплинаID` int NOT NULL,
+  `ГруппаID` int NOT NULL,
+  `ЧасыЛекций` int DEFAULT '0',
+  `ЧасыПрактик` int DEFAULT '0',
+  `ЧасыКонсультаций` int DEFAULT '0',
+  `ЧасыКурсового` int DEFAULT '0',
+  `ЧасыЭкзамена` int DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -106,10 +106,10 @@ INSERT INTO `Нагрузка` (`ID`, `ПреподавательID`, `Дисц�
 --
 
 CREATE TABLE `Оценка` (
-  `ID` int(11) NOT NULL,
-  `СтудентID` int(11) NOT NULL,
-  `ЗанятиеID` int(11) NOT NULL,
-  `Оценка` int(11) NOT NULL,
+  `ID` int NOT NULL,
+  `СтудентID` int NOT NULL,
+  `ЗанятиеID` int NOT NULL,
+  `Оценка` int NOT NULL,
   `Дата` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -177,7 +177,8 @@ INSERT INTO `Оценка` (`ID`, `СтудентID`, `ЗанятиеID`, `Оц�
 (57, 19, 30, 5, '2023-09-30'),
 (58, 20, 28, 4, '2023-09-28'),
 (59, 20, 29, 4, '2023-09-29'),
-(60, 20, 30, 3, '2023-09-30');
+(60, 20, 30, 3, '2023-09-30'),
+(61, 4, 51, 3, '2025-05-17');
 
 -- --------------------------------------------------------
 
@@ -186,10 +187,10 @@ INSERT INTO `Оценка` (`ID`, `СтудентID`, `ЗанятиеID`, `Оц�
 --
 
 CREATE TABLE `Преподаватель` (
-  `ID` int(11) NOT NULL,
-  `ФИО` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `Логин` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `Пароль` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL
+  `ID` int NOT NULL,
+  `ФИО` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `Логин` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `Пароль` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -197,8 +198,8 @@ CREATE TABLE `Преподаватель` (
 --
 
 INSERT INTO `Преподаватель` (`ID`, `ФИО`, `Логин`, `Пароль`) VALUES
-(1, 'Иванов Петр Сергеевич', 'ivanov_ps', 'password123'),
-(2, 'Петрова Анна Михайловна', 'petrova_am', 'qwerty456'),
+(1, 'Иванов Петр Сергеевич', 'ivanov_ps', '$2y$10$RBDZOfXrOfI0W9IvCB76yOuLfOtnwqOVTz.Xi4jP.EyrObRYYiRlG'),
+(2, 'Петрова Анна Михайловна', 'petrova_am', '$2y$10$uX/fJbdFuvhgsIzd1HeAyOWAK9Q3OUffnU9VlFNqXp60v3OjTCrV2'),
 (3, 'Сидоров Алексей Владимирович', 'sidorov_av', 'asdfgh789'),
 (4, 'Кузнецова Елена Дмитриевна', 'kuznetsova_ed', 'zxcvbn123'),
 (5, 'Васильев Денис Олегович', 'vasilev_do', 'pass123word'),
@@ -215,11 +216,11 @@ INSERT INTO `Преподаватель` (`ID`, `ФИО`, `Логин`, `Пар�
 --
 
 CREATE TABLE `Пропуск` (
-  `ID` int(11) NOT NULL,
-  `СтудентID` int(11) NOT NULL,
-  `ЗанятиеID` int(11) NOT NULL,
-  `Минуты` int(11) NOT NULL,
-  `ФайлОбъяснительной` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL
+  `ID` int NOT NULL,
+  `СтудентID` int NOT NULL,
+  `ЗанятиеID` int NOT NULL,
+  `Минуты` int NOT NULL,
+  `ФайлОбъяснительной` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -255,11 +256,11 @@ INSERT INTO `Пропуск` (`ID`, `СтудентID`, `ЗанятиеID`, `М�
 --
 
 CREATE TABLE `ПрограммаДисциплины` (
-  `ID` int(11) NOT NULL,
-  `Тема` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `ТипЗанятия` enum('лекция','практика','консультация','курсовой проект','экзамен') COLLATE utf8mb4_unicode_ci NOT NULL,
-  `Часы` int(11) NOT NULL,
-  `ДисциплинаID` int(11) NOT NULL
+  `ID` int NOT NULL,
+  `Тема` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `ТипЗанятия` enum('лекция','практика','консультация','курсовой проект','экзамен') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `Часы` int NOT NULL,
+  `ДисциплинаID` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -293,8 +294,8 @@ INSERT INTO `ПрограммаДисциплины` (`ID`, `Тема`, `Тип�
 --
 
 CREATE TABLE `Группа` (
-  `ID` int(11) NOT NULL,
-  `Название` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL
+  `ID` int NOT NULL,
+  `Название` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -320,8 +321,8 @@ INSERT INTO `Группа` (`ID`, `Название`) VALUES
 --
 
 CREATE TABLE `Дисциплина` (
-  `ID` int(11) NOT NULL,
-  `Наименование` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL
+  `ID` int NOT NULL,
+  `Наименование` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -347,10 +348,10 @@ INSERT INTO `Дисциплина` (`ID`, `Наименование`) VALUES
 --
 
 CREATE TABLE `Занятие` (
-  `ID` int(11) NOT NULL,
+  `ID` int NOT NULL,
   `Дата` date NOT NULL,
-  `НагрузкаID` int(11) NOT NULL,
-  `ПрограммаID` int(11) NOT NULL
+  `НагрузкаID` int NOT NULL,
+  `ПрограммаID` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -407,7 +408,8 @@ INSERT INTO `Занятие` (`ID`, `Дата`, `НагрузкаID`, `Прог�
 (47, '2023-10-17', 19, 13),
 (48, '2023-10-18', 19, 14),
 (49, '2023-10-19', 20, 13),
-(50, '2023-10-20', 20, 14);
+(50, '2023-10-20', 20, 14),
+(51, '2025-05-17', 11, 1);
 
 -- --------------------------------------------------------
 
@@ -416,39 +418,41 @@ INSERT INTO `Занятие` (`ID`, `Дата`, `НагрузкаID`, `Прог�
 --
 
 CREATE TABLE `Студент` (
-  `ID` int(11) NOT NULL,
-  `Фамилия` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `Имя` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `Отчество` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `ID` int NOT NULL,
+  `Фамилия` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `Имя` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `Отчество` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `ДатаОтчисления` date DEFAULT NULL,
-  `ГруппаID` int(11) NOT NULL
+  `ГруппаID` int NOT NULL,
+  `login` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Дамп данных таблицы `Студент`
 --
 
-INSERT INTO `Студент` (`ID`, `Фамилия`, `Имя`, `Отчество`, `ДатаОтчисления`, `ГруппаID`) VALUES
-(1, 'Иванов', 'Иван', 'Иванович', NULL, 1),
-(2, 'Петров', 'Петр', 'Петрович', NULL, 1),
-(3, 'Сидорова', 'Анна', 'Сергеевна', NULL, 2),
-(4, 'Кузнецов', 'Дмитрий', 'Алексеевич', '2023-01-15', 2),
-(5, 'Смирнов', 'Алексей', 'Дмитриевич', NULL, 3),
-(6, 'Федорова', 'Екатерина', 'Андреевна', NULL, 3),
-(7, 'Николаев', 'Михаил', 'Олегович', NULL, 4),
-(8, 'Алексеева', 'Ольга', 'Игоревна', NULL, 4),
-(9, 'Павлов', 'Сергей', 'Викторович', NULL, 5),
-(10, 'Васильева', 'Мария', 'Денисовна', NULL, 5),
-(11, 'Григорьев', 'Андрей', 'Павлович', NULL, 6),
-(12, 'Дмитриева', 'Татьяна', 'Александровна', NULL, 6),
-(13, 'Борисов', 'Артем', 'Сергеевич', NULL, 7),
-(14, 'Киселева', 'Юлия', 'Андреевна', NULL, 7),
-(15, 'Тимофеев', 'Денис', 'Олегович', NULL, 8),
-(16, 'Орлова', 'Виктория', 'Дмитриевна', NULL, 8),
-(17, 'Лебедев', 'Александр', 'Игоревич', NULL, 9),
-(18, 'Соколова', 'Анастасия', 'Алексеевна', NULL, 9),
-(19, 'Воробьев', 'Павел', 'Михайлович', NULL, 10),
-(20, 'Зайцева', 'Елена', 'Владимировна', NULL, 10);
+INSERT INTO `Студент` (`ID`, `Фамилия`, `Имя`, `Отчество`, `ДатаОтчисления`, `ГруппаID`, `login`, `password`) VALUES
+(1, 'Иванов', 'Иван', 'Иванович', NULL, 1, '', ''),
+(2, 'Петров', 'Петр', 'Петрович', NULL, 1, '', ''),
+(3, 'Сидорова', 'Анна', 'Сергеевна', NULL, 2, '', ''),
+(4, 'Кузнецов', 'Дмитрий', 'Алексеевич', '2023-01-15', 2, '', ''),
+(5, 'Смирнов', 'Алексей', 'Дмитриевич', NULL, 3, '', ''),
+(6, 'Федорова', 'Екатерина', 'Андреевна', NULL, 3, '', ''),
+(7, 'Николаев', 'Михаил', 'Олегович', NULL, 4, '', ''),
+(8, 'Алексеева', 'Ольга', 'Игоревна', NULL, 4, '', ''),
+(9, 'Павлов', 'Сергей', 'Викторович', NULL, 5, '', ''),
+(10, 'Васильева', 'Мария', 'Денисовна', NULL, 5, '', ''),
+(11, 'Григорьев', 'Андрей', 'Павлович', NULL, 6, '', ''),
+(12, 'Дмитриева', 'Татьяна', 'Александровна', NULL, 6, '', ''),
+(13, 'Борисов', 'Артем', 'Сергеевич', NULL, 7, '', ''),
+(14, 'Киселева', 'Юлия', 'Андреевна', NULL, 7, '', ''),
+(15, 'Тимофеев', 'Денис', 'Олегович', NULL, 8, '', ''),
+(16, 'Орлова', 'Виктория', 'Дмитриевна', NULL, 8, '', ''),
+(17, 'Лебедев', 'Александр', 'Игоревич', NULL, 9, '', ''),
+(18, 'Соколова', 'Анастасия', 'Алексеевна', NULL, 9, '', ''),
+(19, 'Воробьев', 'Павел', 'Михайлович', NULL, 10, '', ''),
+(20, 'Зайцева', 'Елена', 'Владимировна', NULL, 10, '', '');
 
 --
 -- Индексы сохранённых таблиц
@@ -541,61 +545,61 @@ ALTER TABLE `Студент`
 -- AUTO_INCREMENT для таблицы `Консультация`
 --
 ALTER TABLE `Консультация`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT для таблицы `Нагрузка`
 --
 ALTER TABLE `Нагрузка`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT для таблицы `Оценка`
 --
 ALTER TABLE `Оценка`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
+  MODIFY `ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=62;
 
 --
 -- AUTO_INCREMENT для таблицы `Преподаватель`
 --
 ALTER TABLE `Преподаватель`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT для таблицы `Пропуск`
 --
 ALTER TABLE `Пропуск`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT для таблицы `ПрограммаДисциплины`
 --
 ALTER TABLE `ПрограммаДисциплины`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT для таблицы `Группа`
 --
 ALTER TABLE `Группа`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT для таблицы `Дисциплина`
 --
 ALTER TABLE `Дисциплина`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT для таблицы `Занятие`
 --
 ALTER TABLE `Занятие`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
+  MODIFY `ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
 
 --
 -- AUTO_INCREMENT для таблицы `Студент`
 --
 ALTER TABLE `Студент`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- Ограничения внешнего ключа сохраненных таблиц
