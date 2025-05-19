@@ -2,9 +2,7 @@
 
 class students{
     public $id;
-    public $lastName;
-    public $firstName;
-    public $subName;
+    public $FIO;
     public $dateKick;
     public $groupId;
     public $login;
