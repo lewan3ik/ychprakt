@@ -1,15 +1,15 @@
 <?php
 
 class consultation{
-    public $id;
-    public $date;
-    public $groupId;
-    public $teacherId;
-public function __construct($id, $date, $groupId, $teacherId) {
-        $this->id = $id;
-        $this->date = $date;
-        $this->groupId = $groupId;
-        $this->teacherId = $teacherId;
+    public $ID;
+    public $Date;
+    public $GroupID;
+    public $TeacherID;
+public function __construct($ID, $Date, $GroupID, $TeacherID) {
+        $this->ID = $ID;
+        $this->Date = $Date;
+        $this->GroupID = $GroupID;
+        $this->TeacherID = $TeacherID;
     }
 }
 ?>

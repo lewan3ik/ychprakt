@@ -1,14 +1,14 @@
 <?php
 class mark{
-    public $id;
-    public $studentId;
-    public $leassonId;
-    public $mark;
-    public function __construct($id, $studentId, $lessonId, $grade) {
-        $this->id = $id;
-        $this->studentId = $studentId;
-        $this->lessonId = $lessonId;
-        $this->grade = $grade;
+    public $ID;
+    public $StudentID;
+    public $LessonID;
+    public $Grade;
+    public function __construct($ID, $StudentID, $LessonID, $Grade) {
+        $this->ID = $ID;
+        $this->StudentID = $StudentID;
+        $this->LessonID = $LessonID;
+        $this->Grade = $Grade;
     }
 }
 ?>
