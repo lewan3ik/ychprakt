@@ -4,12 +4,13 @@ require_once __DIR__.'/../models/group.php';
 require_once __DIR__.'/../connection/connection.php';
 
 class groupContext extends group {
-    public function __construct(array $data) {
-        parent::__construct(
-            $data['ID'],
-            $data['Name']
-        );
-    }
+   public function __construct(array $data) {
+    // Debugging statement to check the data
+    parent::__construct(
+        $data['ID'],
+        $data['Name']
+    );
+}
 
     public static function select(): array {
         $allGroups = [];
@@ -32,7 +33,7 @@ class groupContext extends group {
     }
     
     // Исправлен тип для даты на 's' (string)
-    if (!$stmt->bind_param('s', $this->name)) {
+    if (!$stmt->bind_param('s', $this->Name)) {
         echo "Bind failed: " . $stmt->error;
         return false;
     }
@@ -49,7 +50,7 @@ class groupContext extends group {
         $sql = "UPDATE `Group` SET `Name` = ? WHERE `ID` = ?";
         $connection = Connection::openConnection();
         $stmt = $connection->prepare($sql);
-        $stmt->bind_param('si', $this->name, $this->id);
+        $stmt->bind_param('si', $this->Name, $this->ID);
         $result = $stmt->execute();
         $stmt->close();
         Connection::closeConnection($connection);

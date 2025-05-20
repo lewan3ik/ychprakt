@@ -1,11 +1,11 @@
 <?php
 
 class group{
-    public $id;
-    public $name;
-    public function __construct($id, $name) {
-        $this->id = $id;
-        $this->name = $name;
+    public $ID;
+    public $Name;
+    public function __construct($ID, $Name) {
+        $this->ID = $ID;
+        $this->Name = $Name;
     }
 }
 ?>

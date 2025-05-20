@@ -1,5 +1,4 @@
 function fetchStudents() {
-    console.log('xyu')
     fetch('../controllers/StudentController.php?action=get')
         .then(res => {
             if (!res.ok) {
@@ -9,8 +8,9 @@ function fetchStudents() {
         })
         .then(students => {
             const tbody = document.getElementById('students');
+            const counter = document.getElementById('studentCount');
+            counter.innerHTML = `${students.length}`;
             tbody.innerHTML = ''; // Очистка содержимого tbody
-            console.log(students);
 
             students.forEach(student => {
                 const row = `
@@ -34,4 +34,38 @@ function fetchStudents() {
         .catch(err => console.error('Failed to fetch students:', err));
 }
 
+function fetchGroups() {
+    fetch('../controllers/GroupController.php?action=get')
+        .then(res => {
+            if (!res.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return res.json();
+        })
+        .then(list => {
+            const tbody = document.getElementById('groups');
+            const counter = document.getElementById('groupCount');
+            counter.innerHTML = `${list.length}`;
+            tbody.innerHTML = ''; // Очистка содержимого tbody
+
+            list.forEach(elem => {
+                const row = `
+                <tr>
+                            <td>${elem.ID}</td>
+                            <td>${elem.Name}</td>
+                            <td>
+                                <button class="btn btn-outline">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-outline">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>`;
+                tbody.insertAdjacentHTML('beforeend', row);
+            });
+        })
+        .catch(err => console.error('Failed to fetch students:', err));
+}
+fetchGroups();
 fetchStudents();

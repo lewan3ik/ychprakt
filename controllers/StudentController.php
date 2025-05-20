@@ -3,8 +3,9 @@ require_once __DIR__ . '/../classes/studentContext.php';
 require_once __DIR__ . '/../classes/groupContext.php';
 
 header('Content-Type: application/json');
-
-try {
+$method = $_SERVER['REQUEST_METHOD'];
+if($method === 'GET' &&($_GET['action']??'')==='get'){
+    try {
     $students = studentContext::select();
     $groups = groupContext::select();
 
@@ -22,7 +23,7 @@ try {
             'FullName' => $student->FullName,
             'login' => $student->login,
             'password' => $student->password,
-            'ExpulsionDate' => $student->ExpulsionDate,
+            'ExpulsionDate' => $student->ExpulsionDate ? $student->ExpulsionDate : '-',
             'GroupID' => $groupName
         ];
     }, $students);
@@ -33,4 +34,6 @@ try {
     http_response_code(500);
     echo json_encode(['error' => 'Failed to fetch students', 'details' => $e->getMessage()]);
 }
+}
+
 ?>
