@@ -6,10 +6,10 @@ require_once __DIR__.'/../connection/connection.php';
 class consultationContext extends consultation {
     public function __construct(array $data) {
         parent::__construct(
-            id: $data['id'],
-            date: $data['date'],
-            groupId: $data['groupId'],
-            teacherId: $data['teacherId']
+            $data['ID'],
+            $data['Date'],
+            $data['GroupID'],
+            $data['TeacherID']
         );
     }
 
@@ -25,22 +25,41 @@ class consultationContext extends consultation {
         return $allConsultations;
     }
 
-    public function add(): void {
-        $sql = "INSERT INTO `Consultation`(`Date`, `GroupID`, `TeacherID`) VALUES (?, ?, ?)";
-        $connection = Connection::openConnection();
-        $stmt = $connection->prepare($sql);
-        $stmt->bind_param('sii',
-            $this->date,
-            $this->groupId,
-            $this->teacherId
-        );
-        $result = $stmt->execute();
+    public function add() {
+    $sql = "INSERT INTO `Consultation`(`Date`, `GroupID`, `TeacherID`) VALUES (?, ?, ?)";
+    $connection = Connection::openConnection();
+    
+    if (!$stmt = $connection->prepare($sql)) {
+        echo "Prepare failed: " . $connection->error;
+        return false;
+    }
+    
+    // Правильные имена переменных (обратите внимание на регистр)
+    $date = $this->date;
+    $groupId = $this->groupId;  // должно совпадать с именем свойства
+    $teacherId = $this->teacherId;  // должно совпадать с именем свойства
+    
+    // Исправлен тип для даты на 's' (string)
+    if (!$stmt->bind_param('sii', $date, $groupId, $teacherId)) {
+        echo "Bind failed: " . $stmt->error;
+        return false;
+    }
+    
+    if (!$stmt->execute()) {
+        echo "Execute failed: " . $stmt->error;
         $stmt->close();
         Connection::closeConnection($connection);
-        return $result;
+        return false;
     }
+    
+    $success = $stmt->affected_rows > 0;
+    $stmt->close();
+    Connection::closeConnection($connection);
+    
+    return $success;
+}
 
-    public function update(): void {
+    public function update(): bool {
         $sql = "UPDATE `Consultation` SET `Date` = ?, `GroupID` = ?, `TeacherID` = ? WHERE `id` = ?";
         $connection = Connection::openConnection();
         $stmt = $connection->prepare($sql);
@@ -56,11 +75,11 @@ class consultationContext extends consultation {
         return $result;
     }
 
-    public static function delete($delId): void {
+    public static function delete($delId): bool {
         $sql = "DELETE FROM `Consultation` WHERE `ID` = ?";
         $connection = Connection::openConnection();
         $stmt = $connection->prepare($sql);
-        $stmt->bind_param('i', $this->delId);
+        $stmt->bind_param('i', $delId);
         $result = $stmt->execute();
         $stmt->close();
         Connection::closeConnection($connection);

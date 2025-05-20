@@ -6,10 +6,10 @@ require_once __DIR__.'/../connection/connection.php';
 class markContext extends mark {
     public function __construct(array $data) {
         parent::__construct(
-            id: $data['id'],
-            studentId: $data['studentId'],
-            leassonId: $data['leassonId'],
-            mark: $data['mark']
+            $data['ID'],
+            $data['StudentID'],
+            $data['LessonID'],
+            $data['Grade']
         );
     }
 
@@ -25,13 +25,13 @@ class markContext extends mark {
         return $allMarks;
     }
 
-    public function add(): void {
+    public function add(): bool {
         $sql = "INSERT INTO `Grade`(`StudentID`, `LessonID`, `Grade`) VALUES (?, ?, ?)";
         $connection = Connection::openConnection();
         $stmt = $connection->prepare($sql);
         $stmt->bind_param('iis',
             $this->studentId,
-            $this->leassonId,
+            $this->lessonId,
             $this->mark
         );
         $result = $stmt->execute();
@@ -40,13 +40,13 @@ class markContext extends mark {
         return $result;
     }
 
-    public function update(): void {
+    public function update(): bool {
         $sql = "UPDATE `Grade` SET `StudentID` = ?, `LessonID` = ?, `Grade` = ? WHERE `ID` = ?";
         $connection = Connection::openConnection();
         $stmt = $connection->prepare($sql);
         $stmt->bind_param('iisi',
             $this->studentId,
-            $this->leassonId,
+            $this->lessonId,
             $this->mark,
             $this->id
         );
@@ -56,11 +56,11 @@ class markContext extends mark {
         return $result;
     }
 
-    public function delete($delId): void {
+    public function delete($delId): bool {
         $sql = "DELETE FROM `Grade` WHERE `ID` = ?";
         $connection = Connection::openConnection();
         $stmt = $connection->prepare($sql);
-        $stmt->bind_param('i', $this->$delId);
+        $stmt->bind_param('i', $delId);
         $result = $stmt->execute();
         $stmt->close();
         Connection::closeConnection($connection);
