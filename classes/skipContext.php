@@ -6,11 +6,11 @@ require_once __DIR__.'/../connection/connection.php';
 class skipContext extends skip {
     public function __construct(array $data) {
         parent::__construct(
-            id: $data['id'],
-            studentId: $data['studentId'],
-            leassonId: $data['leassonId'],
-            minuts: $data['minuts'],
-            file: $data['file']
+            id: $data['ID'],
+            studentId: $data['StudentID'],
+            leassonId: $data['LessonID'],
+            minuts: $data['Minutes'],
+            file: $data['ExplanationFile']
         );
     }
 
@@ -25,33 +25,50 @@ class skipContext extends skip {
         Connection::closeConnection($connection);
         return $allSkips;
     }
-
-    public function add(): void {
+    
+    public function add(): bool {
         $sql = "INSERT INTO `Absence`(`StudentID`, `LessonID`, `Minutes`, `ExplanationFile`) VALUES (?, ?, ?, ?)";
         $connection = Connection::openConnection();
-        $stmt = $connection->prepare($sql);
-        $stmt->bind_param('iiss',
-            $this->studentId,
-            $this->leassonId,
-            $this->minuts,
-            $this->file
-        );
-        $result = $stmt->execute();
+        
+        if (!$stmt = $connection->prepare($sql)) {
+            echo "Ошибка подготовки запроса: " . $connection->error;
+            return false;
+        }
+        
+        // Исправлено: правильные параметры и типы (i - integer, s - string)
+        if (!$stmt->bind_param('iiss', 
+            $this->StudentID,
+            $this->LessonID,
+            $this->Minutes,
+            $this->ExplanationFile)) {
+            echo "Ошибка привязки параметров: " . $stmt->error;
+            return false;
+        }
+        
+        if (!$stmt->execute()) {
+            echo "Ошибка выполнения: " . $stmt->error;
+            $stmt->close();
+            Connection::closeConnection($connection);
+            return false;
+        }
+        
         $stmt->close();
         Connection::closeConnection($connection);
-        return $result;
+        return true;
     }
 
-    public function update(): void {
+    public function update(): bool {
         $sql = "UPDATE `Absence` SET `StudentID` = ?, `LessonID` = ?, `Minutes` = ?, `ExplanationFile` = ? WHERE `ID` = ?";
         $connection = Connection::openConnection();
         $stmt = $connection->prepare($sql);
+        
+        // Исправлено: добавлен ID в конец параметров
         $stmt->bind_param('iissi',
-            $this->studentId,
-            $this->leassonId,
-            $this->minuts,
-            $this->file,
-            $this->id
+            $this->StudentID,
+            $this->LessonID,
+            $this->Minutes,
+            $this->ExplanationFile,
+            $this->ID
         );
         $result = $stmt->execute();
         $stmt->close();
@@ -59,15 +76,16 @@ class skipContext extends skip {
         return $result;
     }
 
-    public function delete($delId): void {
+    public function delete($delId): bool {
         $sql = "DELETE FROM `Absence` WHERE `ID` = ?";
         $connection = Connection::openConnection();
         $stmt = $connection->prepare($sql);
-        $stmt->bind_param('i', $this->$delId);
+        
+        // Исправлено: используем параметр метода $delId вместо $this->$delId
+        $stmt->bind_param('i', $delId);
         $result = $stmt->execute();
         $stmt->close();
         Connection::closeConnection($connection);
         return $result;
     }
 }
-?>

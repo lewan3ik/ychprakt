@@ -6,8 +6,8 @@ require_once __DIR__.'/../connection/connection.php';
 class disciplineContext extends discipline {
     public function __construct(array $data) {
         parent::__construct(
-            id: $data['id'],
-            name: $data['name']
+            id: $data['ID'],
+            name: $data['Name']
         );
     }
 
@@ -23,37 +23,63 @@ class disciplineContext extends discipline {
         return $allDisciplines;
     }
 
-    public function add(): void {
-        $sql = "INSERT INTO `Discipline`(`Name`) VALUES (?)";
+    public function add(): bool {
+        $sql = "INSERT INTO `Discipline`(`Name`) VALUES (?)"; // Исправлено: вставляем в Discipline, а не в Group
         $connection = Connection::openConnection();
-        $stmt = $connection->prepare($sql);
-        $stmt->bind_param('s', $this->name);
-        $result = $stmt->execute();
+        
+        if (!$stmt = $connection->prepare($sql)) {
+            echo "Ошибка подготовки запроса: " . $connection->error;
+            return false;
+        }
+        
+        if (!$stmt->bind_param('s', $this->name)) {
+            echo "Ошибка привязки параметра: " . $stmt->error;
+            return false;
+        }
+        
+        if (!$stmt->execute()) {
+            echo "Ошибка выполнения: " . $stmt->error;
+            $stmt->close();
+            Connection::closeConnection($connection);
+            return false;
+        }
+        
+        $success = $stmt->affected_rows > 0;
         $stmt->close();
         Connection::closeConnection($connection);
-        return $result;
+        return $success;
     }
 
-    public function update(): void {
+    public function update(): bool { // Изменено: возвращает bool вместо void
         $sql = "UPDATE `Discipline` SET `Name` = ? WHERE `ID` = ?";
         $connection = Connection::openConnection();
         $stmt = $connection->prepare($sql);
-        $stmt->bind_param('si', $this->name, $this->id);
+        
+        if (!$stmt->bind_param('si', $this->name, $this->id)) {
+            echo "Ошибка привязки параметров: " . $stmt->error;
+            return false;
+        }
+        
         $result = $stmt->execute();
         $stmt->close();
         Connection::closeConnection($connection);
         return $result;
     }
 
-    public function delete($delId): void {
+    public function delete($delId): bool { // Изменено: возвращает bool вместо void
         $sql = "DELETE FROM `Discipline` WHERE `ID` = ?";
         $connection = Connection::openConnection();
         $stmt = $connection->prepare($sql);
-        $stmt->bind_param('i', $this->$delId);
+        
+        // Исправлено: используем параметр метода $delId вместо $this->$delId
+        if (!$stmt->bind_param('i', $delId)) {
+            echo "Ошибка привязки параметра: " . $stmt->error;
+            return false;
+        }
+        
         $result = $stmt->execute();
         $stmt->close();
         Connection::closeConnection($connection);
         return $result;
     }
 }
-?>

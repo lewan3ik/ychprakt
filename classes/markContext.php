@@ -28,27 +28,41 @@ class markContext extends mark {
     public function add(): bool {
         $sql = "INSERT INTO `Grade`(`StudentID`, `LessonID`, `Grade`) VALUES (?, ?, ?)";
         $connection = Connection::openConnection();
-        $stmt = $connection->prepare($sql);
-        $stmt->bind_param('iis',
-            $this->studentId,
-            $this->lessonId,
-            $this->mark
-        );
-        $result = $stmt->execute();
+
+        if (!$stmt = $connection->prepare($sql)) {
+            echo "Prepare failed: " . $connection->error;
+            return false;
+        }
+
+        if (!$stmt->bind_param('iii',
+            $this->StudentID,
+            $this->LessonID,
+            $this->Grade)) {
+            echo "Bind failed: " . $stmt->error;
+            return false;
+        }
+
+        if (!$stmt->execute()) {
+            echo "Execute failed: " . $stmt->error;
+            $stmt->close();
+            Connection::closeConnection($connection);
+            return false;
+        }
+
         $stmt->close();
         Connection::closeConnection($connection);
-        return $result;
+        return true;
     }
 
     public function update(): bool {
         $sql = "UPDATE `Grade` SET `StudentID` = ?, `LessonID` = ?, `Grade` = ? WHERE `ID` = ?";
         $connection = Connection::openConnection();
         $stmt = $connection->prepare($sql);
-        $stmt->bind_param('iisi',
-            $this->studentId,
-            $this->lessonId,
-            $this->mark,
-            $this->id
+        $stmt->bind_param('iiii',
+            $this->StudentID,
+            $this->LessonID,
+            $this->Grade,
+            $this->ID
         );
         $result = $stmt->execute();
         $stmt->close();

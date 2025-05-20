@@ -6,11 +6,11 @@ require_once __DIR__.'/../connection/connection.php';
 class programDisciplineContext extends programDiscipline {
     public function __construct(array $data) {
         parent::__construct(
-            id: $data['id'],
-            theme: $data['theme'],
-            tipy: $data['tipy'],
-            hours: $data['hours'],
-            disciplineId: $data['disciplineId']
+            id: $data['ID'],
+            theme: $data['Topic'],
+            tipy: $data['ClassType'],
+            hours: $data['Hours'],
+            disciplineId: $data['DisciplineID']
         );
     }
 
@@ -25,49 +25,73 @@ class programDisciplineContext extends programDiscipline {
         Connection::closeConnection($connection);
         return $allProgramDisciplines;
     }
-
-    public function add(): void {
+    
+    public function add(): bool {
         $sql = "INSERT INTO `DisciplineProgram`(`Topic`, `ClassType`, `Hours`, `DisciplineID`) VALUES (?, ?, ?, ?)";
         $connection = Connection::openConnection();
-        $stmt = $connection->prepare($sql);
-        $stmt->bind_param('ssii',
-            $this->theme,
-            $this->tipy,
-            $this->hours,
-            $this->disciplineId
-        );
-        $result = $stmt->execute();
+        
+        if (!$stmt = $connection->prepare($sql)) {
+            echo "Ошибка подготовки запроса: " . $connection->error;
+            return false;
+        }
+        
+        if (!$stmt->bind_param('ssii', 
+            $this->Topic,
+            $this->ClassType,
+            $this->Hours,
+            $this->DisciplineID)) {
+            echo "Ошибка привязки параметров: " . $stmt->error;
+            return false;
+        }
+        
+        if (!$stmt->execute()) {
+            echo "Ошибка выполнения: " . $stmt->error;
+            $stmt->close();
+            Connection::closeConnection($connection);
+            return false;
+        }
+        
+        $success = $stmt->affected_rows > 0;
         $stmt->close();
         Connection::closeConnection($connection);
-        return $result;
+        return $success;
     }
 
-    public function update(): void {
+    public function update(): bool {
         $sql = "UPDATE `DisciplineProgram` SET `Topic` = ?, `ClassType` = ?, `Hours` = ?, `DisciplineID` = ? WHERE `ID` = ?";
         $connection = Connection::openConnection();
         $stmt = $connection->prepare($sql);
-        $stmt->bind_param('ssiii',
-            $this->theme,
-            $this->tipy,
-            $this->hours,
-            $this->disciplineId,
-            $this->id
-        );
+        
+        if (!$stmt->bind_param('ssiii',
+            $this->Topic,
+            $this->ClassType,
+            $this->Hours,
+            $this->DisciplineID,
+            $this->ID
+        )) {
+            echo "Ошибка привязки параметров: " . $stmt->error;
+            return false;
+        }
+        
         $result = $stmt->execute();
         $stmt->close();
         Connection::closeConnection($connection);
         return $result;
     }
 
-    public function delete($delId): void {
+    public function delete($delId): bool {
         $sql = "DELETE FROM `DisciplineProgram` WHERE `ID` = ?";
         $connection = Connection::openConnection();
         $stmt = $connection->prepare($sql);
-        $stmt->bind_param('i', $this->$delId);
+        
+        if (!$stmt->bind_param('i', $delId)) {
+            echo "Ошибка привязки параметра: " . $stmt->error;
+            return false;
+        }
+        
         $result = $stmt->execute();
         $stmt->close();
         Connection::closeConnection($connection);
         return $result;
     }
 }
-?>

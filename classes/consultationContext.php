@@ -25,50 +25,54 @@ class consultationContext extends consultation {
         return $allConsultations;
     }
 
-    public function add() {
-    $sql = "INSERT INTO `Consultation`(`Date`, `GroupID`, `TeacherID`) VALUES (?, ?, ?)";
-    $connection = Connection::openConnection();
-    
-    if (!$stmt = $connection->prepare($sql)) {
-        echo "Prepare failed: " . $connection->error;
-        return false;
-    }
-    
-    // Правильные имена переменных (обратите внимание на регистр)
-    $date = $this->date;
-    $groupId = $this->groupId;  // должно совпадать с именем свойства
-    $teacherId = $this->teacherId;  // должно совпадать с именем свойства
-    
-    // Исправлен тип для даты на 's' (string)
-    if (!$stmt->bind_param('sii', $date, $groupId, $teacherId)) {
-        echo "Bind failed: " . $stmt->error;
-        return false;
-    }
-    
-    if (!$stmt->execute()) {
-        echo "Execute failed: " . $stmt->error;
+    public function add(): bool {
+        $sql = "INSERT INTO `Consultation`(`Date`, `GroupID`, `TeacherID`) VALUES (?, ?, ?)";
+        $connection = Connection::openConnection();
+        
+        if (!$stmt = $connection->prepare($sql)) {
+            echo "Ошибка подготовки запроса: " . $connection->error;
+            return false;
+        }
+        
+        // Используем свойства объекта напрямую
+        if (!$stmt->bind_param('sii', 
+            $this->Date, 
+            $this->GroupID, 
+            $this->TeacherID)) {
+            echo "Ошибка привязки параметров: " . $stmt->error;
+            return false;
+        }
+        
+        if (!$stmt->execute()) {
+            echo "Ошибка выполнения запроса: " . $stmt->error;
+            $stmt->close();
+            Connection::closeConnection($connection);
+            return false;
+        }
+        
+        $success = $stmt->affected_rows > 0;
         $stmt->close();
         Connection::closeConnection($connection);
-        return false;
+        
+        return $success;
     }
-    
-    $success = $stmt->affected_rows > 0;
-    $stmt->close();
-    Connection::closeConnection($connection);
-    
-    return $success;
-}
 
     public function update(): bool {
-        $sql = "UPDATE `Consultation` SET `Date` = ?, `GroupID` = ?, `TeacherID` = ? WHERE `id` = ?";
+        $sql = "UPDATE `Consultation` SET `Date` = ?, `GroupID` = ?, `TeacherID` = ? WHERE `ID` = ?";
         $connection = Connection::openConnection();
         $stmt = $connection->prepare($sql);
-        $stmt->bind_param('siii',
-            $this->date,
-            $this->groupId,
-            $this->teacherId,
-            $this->id
-        );
+        
+        // Исправлено: регистр в именах свойств должен соответствовать конструктору
+        if (!$stmt->bind_param('siii',
+            $this->Date,
+            $this->GroupID,
+            $this->TeacherID,
+            $this->ID
+        )) {
+            echo "Ошибка привязки параметров: " . $stmt->error;
+            return false;
+        }
+        
         $result = $stmt->execute();
         $stmt->close();
         Connection::closeConnection($connection);
@@ -79,11 +83,15 @@ class consultationContext extends consultation {
         $sql = "DELETE FROM `Consultation` WHERE `ID` = ?";
         $connection = Connection::openConnection();
         $stmt = $connection->prepare($sql);
-        $stmt->bind_param('i', $delId);
+        
+        if (!$stmt->bind_param('i', $delId)) {
+            echo "Ошибка привязки параметра: " . $stmt->error;
+            return false;
+        }
+        
         $result = $stmt->execute();
         $stmt->close();
         Connection::closeConnection($connection);
         return $result;
     }
 }
-?>
