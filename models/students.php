@@ -1,19 +1,17 @@
 <?php
 
 class students{
-    public $id;
-    public $FIO;
-    public $dateKick;
-    public $groupId;
+    public $ID;
+    public $FullName;
+    public $ExpulsionDate;
+    public $GroupID;
     public $login;
     public $password;
-    public function __construct($id, $lastName, $firstName, $subName, $dateKick, $groupId, $login, $password) {
-        $this->id = $id;
-        $this->lastName = $lastName;
-        $this->firstName = $firstName;
-        $this->subName = $subName;
-        $this->dateKick = $dateKick;
-        $this->groupId = $groupId;
+    public function __construct($id, $FullName,$login,$password, $ExpulsionDate, $groupId) {
+        $this->ID = $id;
+        $this->FullName = $FullName;
+        $this->ExpulsionDate = $ExpulsionDate;
+        $this->GroupID = $groupId;
         $this->login = $login;
         $this->password = $password;
     }

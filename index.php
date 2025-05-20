@@ -1,17 +1,16 @@
 <?php
-require __DIR__ . "/classes/GroupContext.php";
+require __DIR__ . "/classes/studentContext.php";
+require_once __DIR__ . '/classes/groupContext.php';
 
 $list = array(
-    'ID' => 11,
-    'Name' => 'ИСВ-22-6'
+    'ID' => 6,
+    'Name' => 'Исв-22-1'
 );
-$obj = new groupContext($list);
+$obj = new groupContext();
 
 $marks = $obj->select();
 foreach ($marks as $mark) {
     echo "ID: " . $mark->id . ", Name: " . 
-    $mark->name ."\n";
+    $mark->Name ."\n";
 }
-
-echo $obj->delete(11);
 ?>

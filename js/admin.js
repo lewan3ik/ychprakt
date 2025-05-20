@@ -1,4 +1,5 @@
 function fetchStudents() {
+    console.log('xyu')
     fetch('../controllers/StudentController.php?action=get')
         .then(res => {
             if (!res.ok) {
@@ -9,14 +10,15 @@ function fetchStudents() {
         .then(students => {
             const tbody = document.getElementById('students');
             tbody.innerHTML = ''; // Очистка содержимого tbody
+            console.log(students);
 
             students.forEach(student => {
                 const row = `
                 <tr>
                     <td>${student.ID}</td>
-                    <td>${student.FIO}</td>
-                    <td>${student.Group}</td>
-                    <td>${student.date}</td>
+                    <td>${student.FullName}</td>
+                    <td>${student.GroupID}</td>
+                    <td>${student.ExpulsionDate}</td>
                     <td>
                         <button class="btn btn-outline">
                             <i class="fas fa-edit"></i>

@@ -6,12 +6,12 @@ require_once __DIR__.'/../connection/connection.php';
 class studentContext extends students {
     public function __construct(array $data) {
         parent::__construct(
-            id: $data['ID'],
-            lastName: $data['FulName'],
-            firstName: $data['login'],
-            subName: $data['password'],
-            dateKick: $data['ExpulsionDate'],
-            groupId: $data['GroupID']
+            $data['ID'],
+            $data['FullName'],
+            $data['login'],
+            $data['password'],
+            $data['ExpulsionDate'],
+            $data['GroupID']
         );
     }
 
@@ -28,7 +28,7 @@ class studentContext extends students {
     }
 
     public function add() {
-        $sql = "INSERT INTO `Student`(`FulName`, `login`, `password`, `ExpulsionDate`, `GroupID`) VALUES (?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO `Student`(`FullName`, `login`, `password`, `ExpulsionDate`, `GroupID`) VALUES (?, ?, ?, ?, ?)";
         $connection = Connection::openConnection();
 
         if (!$stmt = $connection->prepare($sql)) {
@@ -36,11 +36,11 @@ class studentContext extends students {
             return false;
         }
         if (!$stmt->bind_param('ssssi',
-            $fullName,
-            $this->firstName,
-            password_hash($this->subName, PASSWORD_DEFAULT),
-            $this->dateKick,
-            $this->groupId)) {
+            $this->FullName,
+            $this->login,
+            password_hash($this->password, PASSWORD_DEFAULT),
+            $this->ExpulsionDate,
+            $this->GroupId)) {
             echo "Bind failed: " . $stmt->error;
             return false;
         }
@@ -58,16 +58,16 @@ class studentContext extends students {
     }
 
     public function update(): bool {
-        $sql = "UPDATE `Student` SET `FulName` = ?, `login` = ?, `password` = ?, `ExpulsionDate` = ?, `GroupID` = ? WHERE `ID` = ?";
+        $sql = "UPDATE `Student` SET `FullName` = ?, `login` = ?, `password` = ?, `ExpulsionDate` = ?, `GroupID` = ? WHERE `ID` = ?";
         $connection = Connection::openConnection();
         $stmt = $connection->prepare($sql);
         $stmt->bind_param('ssssii',
-            $FulName,
-            password_hash( PASSWORD_DEFAULT),
+            $this->FullName,
+            $this->login,
+            password_hash($this->password, PASSWORD_DEFAULT),
             $this->ExpulsionDate,
             $this->GroupID,
-            $this->ID,
-            this ->login
+            $this->ID
         );
         $result = $stmt->execute();
         $stmt->close();
