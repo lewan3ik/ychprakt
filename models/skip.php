@@ -1,10 +1,10 @@
 <?php
 
 class skip{
-    public $id;
-    public $studentId;
-    public $leassonId;
-    public $minuts;
-    public $file;
+    public $ID;
+    public $StudentID;
+    public $LessonID;
+    public $Minutes;
+    public $ExplanationFile;
 }
 ?>

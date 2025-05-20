@@ -1,15 +1,15 @@
 <?php
 
 class teacher{
-    public $id;
-    public $FIO;
-    public $login;
-    public $password;
-    public function __construct($id, $FIO, $login, $password) {
-        $this->id = $id;
-        $this->FIO = $FIO;
-        $this->login = $login;
-        $this->password = $password;
+    public $ID;
+    public $FullName;
+    public $Login;
+    public $Password;
+    public function __construct($ID, $FullName, $Login, $Password) {
+        $this->ID = $ID;
+        $this->FullName = $FullName;
+        $this->Login = $Login;
+        $this->Password = $Password;
     }
 }
 ?>

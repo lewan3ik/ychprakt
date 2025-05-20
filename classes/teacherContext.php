@@ -1,51 +1,75 @@
 <?php
 
-
 require_once __DIR__.'/../models/teacher.php';
 require_once __DIR__.'/../connection/connection.php';
 
 class teacherContext extends teacher {
     public function __construct(array $data) {
         parent::__construct(
-            id: $data['id'],
-            FIO: $data['FIO'],
-            login: $data['login'],
-            password: $data['password']
+            $data['ID'],
+            $data['FullName'],
+            $data['Login'],
+            $data['Password']
         );
     }
 
     public static function select(): array {
-        $allteachers = [];
+        $allTeachers = [];
         $sql = "SELECT * FROM `Teacher`;";
         $connection = Connection::openConnection();
         $result = Connection::query($sql, $connection);
         while ($row = $result->fetch_assoc()) {
-            $allteachers[] = new teacherContext($row);
+            $allTeachers[] = new teacherContext($row);
         }
         Connection::closeConnection($connection);
-        return $allteachers;
+        return $allTeachers;
     }
-
-    public function add(): void {
+    
+    public function add(): bool {
         $sql = "INSERT INTO `Teacher`(`FullName`, `Login`, `Password`) VALUES (?, ?, ?)";
         $connection = Connection::openConnection();
-        $stmt = $connection->prepare($sql);
-        $stmt->bind_param('sss', $this->FIO, $this->login, password_hash($this->password, PASSWORD_DEFAULT));
-        $result = $stmt->execute();
+        
+        if (!$stmt = $connection->prepare($sql)) {
+            echo "Ошибка подготовки запроса: " . $connection->error;
+            return false;
+        }
+        
+        // Хешируем пароль перед сохранением
+        $hashedPassword = password_hash($this->Password, PASSWORD_DEFAULT);
+        
+        if (!$stmt->bind_param('sss', 
+            $this->FullName,
+            $this->Login,
+            $hashedPassword)) {
+            echo "Ошибка привязки параметров: " . $stmt->error;
+            return false;
+        }
+        
+        if (!$stmt->execute()) {
+            echo "Ошибка выполнения: " . $stmt->error;
+            $stmt->close();
+            Connection::closeConnection($connection);
+            return false;
+        }
+        
         $stmt->close();
         Connection::closeConnection($connection);
-        return $result;
+        return true;
     }
 
-    public function update(): void {
+    public function update(): bool {
         $sql = "UPDATE `Teacher` SET `FullName` = ?, `Login` = ?, `Password` = ? WHERE `ID` = ?";
         $connection = Connection::openConnection();
         $stmt = $connection->prepare($sql);
-        $stmt->bind_param('sssi', 
-            $this->FIO, 
-            $this->login, 
-            password_hash($this->password, PASSWORD_DEFAULT),
-            $this->id
+        
+        // Хешируем пароль перед обновлением
+        $hashedPassword = password_hash($this->Password, PASSWORD_DEFAULT);
+        
+        $stmt->bind_param('sssi',
+            $this->FullName,
+            $this->Login,
+            $hashedPassword,
+            $this->ID
         );
         $result = $stmt->execute();
         $stmt->close();
@@ -53,15 +77,16 @@ class teacherContext extends teacher {
         return $result;
     }
 
-    public function delete($delId): void {
+    public function delete($delId): bool {
         $sql = "DELETE FROM `Teacher` WHERE `ID` = ?";
         $connection = Connection::openConnection();
         $stmt = $connection->prepare($sql);
-        $stmt->bind_param('i', $this->$delId);
+        
+        // Исправлено: используем параметр метода $delId
+        $stmt->bind_param('i', $delId);
         $result = $stmt->execute();
         $stmt->close();
         Connection::closeConnection($connection);
         return $result;
     }
 }
-?>
