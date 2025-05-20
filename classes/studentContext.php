@@ -6,14 +6,12 @@ require_once __DIR__.'/../connection/connection.php';
 class studentContext extends students {
     public function __construct(array $data) {
         parent::__construct(
-            id: $data['id'],
-            lastName: $data['lastName'],
-            firstName: $data['firstName'],
-            subName: $data['subName'],
-            dateKick: $data['dateKick'],
-            groupId: $data['groupId'],
-            login: $data['login'],
-            password: $data['password']
+            id: $data['ID'],
+            lastName: $data['FulName'],
+            firstName: $data['login'],
+            subName: $data['password'],
+            dateKick: $data['ExpulsionDate'],
+            groupId: $data['GroupID']
         );
     }
 
@@ -29,36 +27,47 @@ class studentContext extends students {
         return $allStudents;
     }
 
-    public function add(): void {
+    public function add() {
         $sql = "INSERT INTO `Student`(`FulName`, `login`, `password`, `ExpulsionDate`, `GroupID`) VALUES (?, ?, ?, ?, ?)";
         $connection = Connection::openConnection();
-        $stmt = $connection->prepare($sql);
-        $fullName = $this->lastName . ' ' . $this->firstName . ' ' . $this->subName;
-        $stmt->bind_param('ssssi',
+
+        if (!$stmt = $connection->prepare($sql)) {
+            echo "Prepare failed: " . $connection->error;
+            return false;
+        }
+        if (!$stmt->bind_param('ssssi',
             $fullName,
-            $this->login,
-            password_hash($this->password, PASSWORD_DEFAULT),
+            $this->firstName,
+            password_hash($this->subName, PASSWORD_DEFAULT),
             $this->dateKick,
-            $this->groupId
-        );
-        $result = $stmt->execute();
+            $this->groupId)) {
+            echo "Bind failed: " . $stmt->error;
+            return false;
+        }
+
+        if (!$stmt->execute()) {
+            echo "Execute failed: " . $stmt->error;
+            $stmt->close();
+            Connection::closeConnection($connection);
+            return false;
+        }
+
         $stmt->close();
         Connection::closeConnection($connection);
-        return $result;
+        return true;
     }
 
-    public function update(): void {
+    public function update(): bool {
         $sql = "UPDATE `Student` SET `FulName` = ?, `login` = ?, `password` = ?, `ExpulsionDate` = ?, `GroupID` = ? WHERE `ID` = ?";
         $connection = Connection::openConnection();
         $stmt = $connection->prepare($sql);
-        $fullName = $this->lastName . ' ' . $this->firstName . ' ' . $this->subName;
         $stmt->bind_param('ssssii',
-            $fullName,
-            $this->login,
-            password_hash($this->password, PASSWORD_DEFAULT),
-            $this->dateKick,
-            $this->groupId,
-            $this->id
+            $FulName,
+            password_hash( PASSWORD_DEFAULT),
+            $this->ExpulsionDate,
+            $this->GroupID,
+            $this->ID,
+            this ->login
         );
         $result = $stmt->execute();
         $stmt->close();
@@ -66,11 +75,11 @@ class studentContext extends students {
         return $result;
     }
 
-    public function delete($delId): void {
+    public function delete($delId): bool {
         $sql = "DELETE FROM `Student` WHERE `ID` = ?";
         $connection = Connection::openConnection();
         $stmt = $connection->prepare($sql);
-        $stmt->bind_param('i', $this->$delId);
+        $stmt->bind_param('i', $delId);
         $result = $stmt->execute();
         $stmt->close();
         Connection::closeConnection($connection);

@@ -6,11 +6,11 @@ require_once __DIR__.'/../connection/connection.php';
 class loadContext extends load {
     public function __construct(array $data) {
         parent::__construct(
-            id: $data['id'],
-            disciplineId: $data['disciplineId'],
-            groupId: $data['groupId'],
-            teacherId: $data['teacherId'],
-            Hours: $data['Hours']
+            $data['ID'],
+            $data['TeacherID'],
+            $data['DisciplineID'],
+            $data['GroupID'],
+            $data['Hours']
         );
     }
 
@@ -25,33 +25,48 @@ class loadContext extends load {
         Connection::closeConnection($connection);
         return $allLoads;
     }
-
-    public function add(): void {
+    
+    public function add(): bool {
         $sql = "INSERT INTO `Workload`(`DisciplineID`, `GroupID`, `TeacherID`, `Hours`) VALUES (?, ?, ?, ?)";
         $connection = Connection::openConnection();
-        $stmt = $connection->prepare($sql);
-        $stmt->bind_param('iiii',
-            $this->disciplineId,
-            $this->groupId,
-            $this->teacherId,
-            $this->Hours
-        );
-        $result = $stmt->execute();
+        
+        if (!$stmt = $connection->prepare($sql)) {
+            echo "Ошибка подготовки запроса: " . $connection->error;
+            return false;
+        }
+        
+        // Исправлено: правильные параметры и типы
+        if (!$stmt->bind_param('iiii', 
+            $this->DisciplineID, 
+            $this->GroupID, 
+            $this->TeacherID, 
+            $this->Hours)) {
+            echo "Ошибка привязки параметров: " . $stmt->error;
+            return false;
+        }
+        
+        if (!$stmt->execute()) {
+            echo "Ошибка выполнения: " . $stmt->error;
+            $stmt->close();
+            Connection::closeConnection($connection);
+            return false;
+        }
+        
         $stmt->close();
         Connection::closeConnection($connection);
-        return $result;
+        return true;
     }
 
-    public function update(): void {
+    public function update(): bool {
         $sql = "UPDATE `Workload` SET `DisciplineID` = ?, `GroupID` = ?, `TeacherID` = ?, `Hours` = ? WHERE `ID` = ?";
         $connection = Connection::openConnection();
         $stmt = $connection->prepare($sql);
         $stmt->bind_param('iiiii',
-            $this->disciplineId,
-            $this->groupId,
-            $this->teacherId,
+            $this->DisciplineID,
+            $this->GroupID,
+            $this->TeacherID,
             $this->Hours,
-            $this->id
+            $this->ID
         );
         $result = $stmt->execute();
         $stmt->close();
@@ -59,15 +74,14 @@ class loadContext extends load {
         return $result;
     }
 
-    public function delete($delId): void {
+    public function delete($delId): bool {
         $sql = "DELETE FROM `Workload` WHERE `ID` = ?";
         $connection = Connection::openConnection();
         $stmt = $connection->prepare($sql);
-        $stmt->bind_param('i', $this->$delID);
+        $stmt->bind_param('i', $delId);  // Исправлено: используем параметр метода, а не свойство
         $result = $stmt->execute();
         $stmt->close();
         Connection::closeConnection($connection);
         return $result;
     }
 }
-?>
