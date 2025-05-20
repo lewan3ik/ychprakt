@@ -1,20 +1,17 @@
 <?php
-require __DIR__ . "/classes/consultationContext.php";
+require __DIR__ . "/classes/GroupContext.php";
 
 $list = array(
-    'ID' => 5,
-    'Date' => '2020-01-05',
-    'GroupID' => 6,
-    'TeacherID' => 4
+    'ID' => 11,
+    'Name' => 'ИСВ-22-6'
 );
-$obj = new consultationContext($list);
+$obj = new groupContext($list);
 
-// $marks = $obj->select();
-// foreach ($marks as $mark) {
-//     echo "ID: " . $mark->id . ", Teacher ID: " . 
-//     $mark->teacherId . ", Group ID: " . $mark->groupId
-//     . ", date: " . $mark->date ."\n";
-// }
+$marks = $obj->select();
+foreach ($marks as $mark) {
+    echo "ID: " . $mark->id . ", Name: " . 
+    $mark->name ."\n";
+}
 
-echo $obj->add();
+echo $obj->delete(11);
 ?>

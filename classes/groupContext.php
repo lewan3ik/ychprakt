@@ -6,8 +6,8 @@ require_once __DIR__.'/../connection/connection.php';
 class groupContext extends group {
     public function __construct(array $data) {
         parent::__construct(
-            id: $data['id'],
-            name: $data['name']
+            $data['ID'],
+            $data['Name']
         );
     }
 
@@ -22,19 +22,30 @@ class groupContext extends group {
         Connection::closeConnection($connection);
         return $allGroups;
     }
-
-    public function add(): void {
-        $sql = "INSERT INTO `Group`(`Name`) VALUES (?)";
-        $connection = Connection::openConnection();
-        $stmt = $connection->prepare($sql);
-        $stmt->bind_param('s', $this->name);
-        $result = $stmt->execute();
+    public function add() {
+    $sql = "INSERT INTO `Group`(`Name`) VALUES (?)";
+    $connection = Connection::openConnection();
+    
+    if (!$stmt = $connection->prepare($sql)) {
+        echo "Prepare failed: " . $connection->error;
+        return false;
+    }
+    
+    // Исправлен тип для даты на 's' (string)
+    if (!$stmt->bind_param('s', $this->name)) {
+        echo "Bind failed: " . $stmt->error;
+        return false;
+    }
+    
+    if (!$stmt->execute()) {
+        echo "Execute failed: " . $stmt->error;
         $stmt->close();
         Connection::closeConnection($connection);
-        return $result;
+        return false;
     }
+}
 
-    public function update(): void {
+    public function update(): bool {
         $sql = "UPDATE `Group` SET `Name` = ? WHERE `ID` = ?";
         $connection = Connection::openConnection();
         $stmt = $connection->prepare($sql);
@@ -45,11 +56,11 @@ class groupContext extends group {
         return $result;
     }
 
-    public function delete($delId): void {
+    public function delete($delId): bool {
         $sql = "DELETE FROM `Group` WHERE `ID` = ?";
         $connection = Connection::openConnection();
         $stmt = $connection->prepare($sql);
-        $stmt->bind_param('i', $this->delId);
+        $stmt->bind_param('i', $delId);
         $result = $stmt->execute();
         $stmt->close();
         Connection::closeConnection($connection);
