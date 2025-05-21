@@ -577,55 +577,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Карточки статистики -->
-            <div class="stats-cards">
-                <div class="stat-card">
-                    <div class="stat-card-header">
-                        <div>
-                            <div class="stat-card-title">Студенты</div>
-                            <div class="stat-card-value">1,248</div>
-                        </div>
-                        <div class="stat-card-icon students">
-                            <i class="fas fa-users"></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-card-header">
-                        <div>
-                            <div class="stat-card-title">Группы</div>
-                            <div class="stat-card-value">42</div>
-                        </div>
-                        <div class="stat-card-icon groups">
-                            <i class="fas fa-layer-group"></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-card-header">
-                        <div>
-                            <div class="stat-card-title">Преподаватели</div>
-                            <div class="stat-card-value">68</div>
-                        </div>
-                        <div class="stat-card-icon teachers">
-                            <i class="fas fa-chalkboard-teacher"></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-card-header">
-                        <div>
-                            <div class="stat-card-title">Дисциплины</div>
-                            <div class="stat-card-value">156</div>
-                        </div>
-                        <div class="stat-card-icon disciplines">
-                            <i class="fas fa-book"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- Студенты -->
             <div class="content-section">
                 <div class="section-header">
@@ -646,18 +597,16 @@
                             <th>№</th>
                             <th>ФИО</th>
                             <th>Группа</th>
-                            <th>Дата рождения</th>
-                            <th>Статус</th>
+                            <th>Дата отчисления</th>
                             <th>Действия</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="students">
                         <tr>
                             <td>1</td>
                             <td>Иванов Иван Иванович</td>
                             <td>ИСП-31.2</td>
                             <td>12.05.2000</td>
-                            <td><span class="status-badge status-active">Активен</span></td>
                             <td>
                                 <button class="btn btn-outline">
                                     <i class="fas fa-edit"></i>
@@ -672,7 +621,6 @@
                             <td>Петров Петр Петрович</td>
                             <td>ИСП-31.4</td>
                             <td>23.07.2001</td>
-                            <td><span class="status-badge status-active">Активен</span></td>
                             <td>
                                 <button class="btn btn-outline">
                                     <i class="fas fa-edit"></i>
@@ -687,7 +635,6 @@
                             <td>Сидоров Сидр Сидорович</td>
                             <td>ИСП-31.2</td>
                             <td>05.11.2000</td>
-                            <td><span class="status-badge status-inactive">Неактивен</span></td>
                             <td>
                                 <button class="btn btn-outline">
                                     <i class="fas fa-edit"></i>
@@ -702,7 +649,6 @@
                             <td>Кузнецов Кузьма Кузнецович</td>
                             <td>ИСП-31.4</td>
                             <td>18.03.2001</td>
-                            <td><span class="status-badge status-active">Активен</span></td>
                             <td>
                                 <button class="btn btn-outline">
                                     <i class="fas fa-edit"></i>
@@ -714,13 +660,7 @@
                         </tr>
                     </tbody>
                 </table>
-                <div class="pagination">
-                    <button><i class="fas fa-angle-left"></i></button>
-                    <button class="active">1</button>
-                    <button>2</button>
-                    <button>3</button>
-                    <button><i class="fas fa-angle-right"></i></button>
-                </div>
+                
             </div>
         </div>
     </div>
@@ -777,6 +717,43 @@
     </div>
 
     <script>
+        function fetchStudents() {
+    fetch('../controllers/StudentController.php?action=get')
+        .then(res => {
+            if (!res.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return res.json();
+        })
+        .then(students => {
+            const tbody = document.getElementById('students');
+            tbody.innerHTML = ''; // Очистка содержимого tbody
+
+            students.forEach(student => {
+                const row = `
+                <tr>
+                            <td>${student.ID}</td>
+                            <td>${student.FullName}</td>
+                            <td>${student.GroupID}</td>
+                            <td>${student.ExpulsionDate}</td>
+                            <td>
+                                <button class="btn btn-outline">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-outline">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>`;
+                tbody.insertAdjacentHTML('beforeend', row);
+            });
+        })
+        .catch(err => console.error('Failed to fetch students:', err));
+}
+
+fetchStudents();
+
+
         document.addEventListener('DOMContentLoaded', function() {
             // Пример обработчика для меню
             const menuItems = document.querySelectorAll('.menu-item');
