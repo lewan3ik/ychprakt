@@ -78,15 +78,34 @@ class teacherContext extends teacher {
     }
 
     public function delete($delId): bool {
-        $sql = "DELETE FROM `Teacher` WHERE `ID` = ?";
-        $connection = Connection::openConnection();
-        $stmt = $connection->prepare($sql);
-        
-        // Исправлено: используем параметр метода $delId
-        $stmt->bind_param('i', $delId);
-        $result = $stmt->execute();
+    $sql = "DELETE FROM `Teacher` WHERE `ID` = ?";
+    $connection = Connection::openConnection();
+
+    if (!$connection) {
+        echo "Ошибка подключения к базе данных.";
+        return false;
+    }
+
+    $stmt = $connection->prepare($sql);
+
+    if (!$stmt) {
+        echo "Ошибка подготовки запроса: " . $connection->error;
+        Connection::closeConnection($connection);
+        return false;
+    }
+
+    $stmt->bind_param('i', $delId);
+
+    if (!$stmt->execute()) {
+        echo "Ошибка выполнения запроса: " . $stmt->error;
         $stmt->close();
         Connection::closeConnection($connection);
-        return $result;
+        return false;
     }
+
+    $stmt->close();
+    Connection::closeConnection($connection);
+    return true;
+}
+
 }

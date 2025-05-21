@@ -1,18 +1,21 @@
 <?php
-require __DIR__ . "/classes/studentContext.php";
-require_once __DIR__ . '/classes/groupContext.php';
+// index.php
+require __DIR__ . "/classes/teacherContext.php";
 
-$list = array(
-    'ID' => 12,
-    'Name' => 'Исв-22-2'
-);
-$obj = new groupContext($list);
+// Пример данных для добавления учителя
+$teacherData = [
+    'ID' => 8, // ID будет установлен автоматически, если это автоинкрементное поле
+    'FullName' => 'Алексеев Андрей Петрович',
+    'Login' => 'alekseev_ap',
+    'Password' => 'password123'
+];
 
-$marks = $obj->select();
-foreach ($marks as $mark) {
-    echo "ID: " . $mark->ID . ", Name: " . 
-    $mark->Name ."\n";
+
+$teacher = new teacherContext($teacherData);
+
+if ($teacher->delete($teacher->ID)) {
+    echo "Учитель успешно удален.\n";
+} else {
+    echo "Ошибка при удалении учителя.\n";
 }
-
-echo $obj->delete(12);
 ?>
