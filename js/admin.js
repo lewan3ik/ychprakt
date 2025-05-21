@@ -69,6 +69,41 @@ function fetchTeachers(){
         .catch(err => console.error('Failed to fetch students:', err));
 }
 
+
+function fetchDiscipline(){
+    fetch('../controllers/disciplineController.php?action=get')
+        .then(res => {
+            if (!res.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return res.json();
+        })
+        .then(list => {
+            const tbody = document.getElementById('disciplines');
+            const counter = document.getElementById('disciplinesCount');
+            counter.innerHTML = `${list.length}`;
+            tbody.innerHTML = ''; // Очистка содержимого tbody
+
+            list.forEach(elem => {
+                const row = `
+                 <tr>
+                            <td>${elem.ID}</td>
+                            <td>${elem.Name}</td>
+                            <td>
+                                <button class="btn btn-outline">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-outline">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>`;
+                tbody.insertAdjacentHTML('beforeend', row);
+            });
+        })
+        .catch(err => console.error('Failed to fetch students:', err));
+}
+
 function fetchGroups() {
     fetch('../controllers/GroupController.php?action=get')
         .then(res => {
@@ -103,5 +138,6 @@ function fetchGroups() {
         .catch(err => console.error('Failed to fetch students:', err));
 }
 fetchGroups();
+fetchDiscipline();
 fetchStudents();
 fetchTeachers();

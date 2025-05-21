@@ -6,8 +6,8 @@ require_once __DIR__.'/../connection/connection.php';
 class disciplineContext extends discipline {
     public function __construct(array $data) {
         parent::__construct(
-            id: $data['ID'],
-            name: $data['Name']
+            $data['ID'],
+            $data['Name']
         );
     }
 
@@ -32,7 +32,7 @@ class disciplineContext extends discipline {
             return false;
         }
         
-        if (!$stmt->bind_param('s', $this->name)) {
+        if (!$stmt->bind_param('s', $this->Name)) {
             echo "Ошибка привязки параметра: " . $stmt->error;
             return false;
         }
@@ -55,7 +55,7 @@ class disciplineContext extends discipline {
         $connection = Connection::openConnection();
         $stmt = $connection->prepare($sql);
         
-        if (!$stmt->bind_param('si', $this->name, $this->id)) {
+        if (!$stmt->bind_param('si', $this->Name, $this->ID)) {
             echo "Ошибка привязки параметров: " . $stmt->error;
             return false;
         }
