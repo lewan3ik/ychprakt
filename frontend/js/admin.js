@@ -1,5 +1,9 @@
+const dir = '../../controllers/';
+
+
+
 function fetchStudents() {
-    fetch('../controllers/StudentController.php?action=get')
+    fetch(dir + 'StudentController.php?action=get')
         .then(res => {
             if (!res.ok) {
                 throw new Error('Network response was not ok');
@@ -11,7 +15,7 @@ function fetchStudents() {
             const counter = document.getElementById('studentCount');
             counter.innerHTML = `${students.length}`;
             tbody.innerHTML = ''; // Очистка содержимого tbody
-
+            console.log(students);
             students.forEach(student => {
                 const row = `
                 <tr>
@@ -35,7 +39,7 @@ function fetchStudents() {
 }
 
 function fetchTeachers(){
-    fetch('../controllers/TeachersController.php?action=get')
+    fetch(dir + 'TeachersController.php?action=get')
         .then(res => {
             if (!res.ok) {
                 throw new Error('Network response was not ok');
@@ -71,7 +75,7 @@ function fetchTeachers(){
 
 
 function fetchDiscipline(){
-    fetch('../controllers/disciplineController.php?action=get')
+    fetch(dir + 'disciplineController.php?action=get')
         .then(res => {
             if (!res.ok) {
                 throw new Error('Network response was not ok');
@@ -105,7 +109,7 @@ function fetchDiscipline(){
 }
 
 function fetchGroups() {
-    fetch('../controllers/GroupController.php?action=get')
+    fetch(dir + 'GroupController.php?action=get')
         .then(res => {
             if (!res.ok) {
                 throw new Error('Network response was not ok');

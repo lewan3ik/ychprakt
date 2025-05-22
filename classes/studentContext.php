@@ -26,6 +26,19 @@ class studentContext extends students {
         Connection::closeConnection($connection);
         return $allStudents;
     }
+      public static function getById($id): ?studentContext {
+    $sql = "SELECT * FROM `Student` WHERE ID = ?;";
+    $connection = Connection::openConnection();
+    $stmt = $connection->prepare($sql);
+    $stmt->bind_param('i', $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    $stmt->close();
+    Connection::closeConnection($connection);
+    
+    return $row ? new studentContext($row) : null;
+}
 
     public function add() {
         $sql = "INSERT INTO `Student`(`FullName`, `login`, `password`, `ExpulsionDate`, `GroupID`) VALUES (?, ?, ?, ?, ?)";

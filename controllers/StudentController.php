@@ -37,21 +37,31 @@ if($method === 'GET' &&($_GET['action']??'')==='get'){
 }
 }
 
-if($method === 'GET' &&($_GET['action']??'')==='getMarks'){
+if($method === 'POST'){
     try {
-        error_log("Attempting to fetch groups...");
-        $groups = markContext::select();
+        $input = json_decode(file_get_contents('php://input'), true);
+        if($input['action'] == 'getStudentMarks'){
+            $student = studentContext::getById(1);
+            $groups = markContext::select();
 
-        $groupArray = array_map(function($elem) {
-            return [
-                'ID' => $elem->ID,
-                'StudentID' => $elem->StudentID,
-                'LessonID'=>$elem->LesssonID,
-                'Grade'=>$elem->Grade
-            ];
-        }, $groups);
-
-        echo json_encode($groupArray, JSON_UNESCAPED_UNICODE);
+        $groupArray = array_filter($groups,function($elem) use ($student) {
+            
+            if($student->ID == $elem->StudentID){
+                return [
+            
+            'ID' => $elem->ID,
+            'StudentID' => $elem->StudentID,
+            'LessonID'=>$elem->LessonID,
+            'Grade' => $elem->Grade
+        ];
+        }});
+        $result =[
+            'student' => $student,
+            'grades'=> $groupArray,
+        ];
+    echo json_encode($result, JSON_UNESCAPED_UNICODE);
+        }
+    exit;
     } catch (Exception $e) {
         error_log("Error: " . $e->getMessage());
         http_response_code(500);

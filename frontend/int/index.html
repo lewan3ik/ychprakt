@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Учебная информационная система</title>
+    <link rel="stylesheet" href="../css/index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script defer src="../js/index.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Сайдбар -->
+        <div class="sidebar">
+    <div class="sidebar-header">
+        <h2><i class="fas fa-graduation-cap"></i> УИС</h2>
+    </div>
+    <div class="sidebar-menu">
+        <div class="menu-category">Основное</div>
+        <a href="index.html" class="menu-item active">
+            <i class="fas fa-home"></i> Главная
+        </a>
+        <a href="students.html" class="menu-item">
+            <i class="fas fa-users"></i> Студенты
+        </a>
+        <a href="groups.html" class="menu-item">
+            <i class="fas fa-layer-group"></i> Группы
+        </a>
+        <a href="dis.html" class="menu-item">
+            <i class="fas fa-book"></i> Дисциплины
+        </a>
+        <a href="teach.html" class="menu-item">
+            <i class="fas fa-chalkboard-teacher"></i> Преподаватели
+        </a>
+        
+        <div class="menu-category">Учебный процесс</div>
+        <a href="programs.html" class="menu-item">
+            <i class="fas fa-tasks"></i> Программы дисциплин
+        </a>
+        <a href="workload.html" class="menu-item">
+            <i class="fas fa-chart-bar"></i> Нагрузка
+        </a>
+        <a href="kons.html" class="menu-item">
+            <i class="fas fa-question-circle"></i> Консультации
+        </a>
+        <a href="absences.html" class="menu-item">
+            <i class="fas fa-user-times"></i> Пропуски
+        </a>
+        <a href="grades.html" class="menu-item">
+            <i class="fas fa-star"></i> Оценки
+        </a>
+        
+        <div class="menu-category">Отчеты</div>
+        <a href="debtors.html" class="menu-item">
+            <i class="fas fa-file-alt"></i> Отчеты по должникам
+        </a>
+        <a href="directions.html" class="menu-item">
+            <i class="fas fa-file-export"></i> Направления
+        </a>
+        <a href="attendance.html" class="menu-item">
+            <i class="fas fa-calendar-check"></i> Посещаемость
+        </a>
+    </div>
+</div>
+        
+        <!-- Основное содержимое -->
+        <div class="main-content">
+            <!-- Шапка -->
+            <div class="header">
+                <div class="header-title">
+                    <h1>Главная</h1>
+                    <p>Обзорная информация по учебному процессу</p>
+                </div>
+                <div class="header-actions">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Поиск...">
+                    </div>
+                    <div class="user-profile">
+                        <div class="user-avatar">ИП</div>
+                        <div class="user-info">
+                            <div class="user-name">Иванов П.С.</div>
+                            <div class="user-role">Преподаватель</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Дисциплины -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h3 class="section-title">Дисциплины</h3>
+                    <div class="section-actions">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Поиск...">
+                        </div>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Добавить
+                        </button>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>№</th>
+                            <th>Наименование</th>
+                            <th>Группа</th>
+                            <th>Занятия</th>
+                            <th>Часы</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>МДК.01.01 Разработка программных модулей</td>
+                            <td>ИСП-31.2</td>
+                            <td>108/110</td>
+                            <td>333/334</td>
+                            <td>
+                                <button class="btn btn-outline">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-outline">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>МДК.01.01 Разработка программных модулей</td>
+                            <td>ИСП-31.4</td>
+                            <td>108/110</td>
+                            <td>336/334</td>
+                            <td>
+                                <button class="btn btn-outline">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-outline">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>МДК.01.03 Разработка мобильных программ</td>
+                            <td>ИСП-31.2</td>
+                            <td>37/40</td>
+                            <td>102/110</td>
+                            <td>
+                                <button class="btn btn-outline">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-outline">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>МДК.01.04 Разработка мобильных программ</td>
+                            <td>ИСП-31.4</td>
+                            <td>37/40</td>
+                            <td>102/110</td>
+                            <td>
+                                <button class="btn btn-outline">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-outline">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="pagination">
+                    <button><i class="fas fa-angle-left"></i></button>
+                    <button class="active">1</button>
+                    <button>2</button>
+                    <button>3</button>
+                    <button><i class="fas fa-angle-right"></i></button>
+                </div>
+            </div>
+            
+            <!-- Последние оценки -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h3 class="section-title">Последние оценки</h3>
+                    <div class="section-actions">
+                        <button class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Добавить оценку
+                        </button>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Студент</th>
+                            <th>Группа</th>
+                            <th>Дисциплина</th>
+                            <th>Тип занятия</th>
+                            <th>Оценка</th>
+                            <th>Дата</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Иванов И.И.</td>
+                            <td>ИСП-31.2</td>
+                            <td>МДК.01.01</td>
+                            <td>Практика</td>
+                            <td><span class="grade-5">5</span></td>
+                            <td>12.05.2023</td>
+                        </tr>
+                        <tr>
+                            <td>Петров П.П.</td>
+                            <td>ИСП-31.2</td>
+                            <td>МДК.01.01</td>
+                            <td>Практика</td>
+                            <td><span class="grade-4">4</span></td>
+                            <td>12.05.2023</td>
+                        </tr>
+                        <tr>
+                            <td>Сидоров С.С.</td>
+                            <td>ИСП-31.4</td>
+                            <td>МДК.01.03</td>
+                            <td>Лекция</td>
+                            <td><span class="grade-3">3</span></td>
+                            <td>11.05.2023</td>
+                        </tr>
+                        <tr>
+                            <td>Кузнецов К.К.</td>
+                            <td>ИСП-31.4</td>
+                            <td>МДК.01.03</td>
+                            <td>Лекция</td>
+                            <td><span class="grade-2">2</span></td>
+                            <td>11.05.2023</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Модальное окно добавления студента -->
+    <div class="modal" id="addStudentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Добавить студента</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Фамилия *</label>
+                            <input type="text" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Имя *</label>
+                            <input type="text" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Отчество *</label>
+                            <input type="text" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Дата рождения</label>
+                            <input type="date" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>Группа</label>
+                            <select class="form-control">
+                                <option>ИСП-31.2</option>
+                                <option>ИСП-31.4</option>
+                                <option>ИСВ-29.1</option>
+                                <option>ИСВ-29.2</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Дата зачисления</label>
+                        <input type="date" class="form-control">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline">Отмена</button>
+                <button class="btn btn-primary">Сохранить</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Здесь будет JavaScript код для функциональности интерфейса
+        document.addEventListener('DOMContentLoaded', function() {
+            // Пример обработчика для меню
+            const menuItems = document.querySelectorAll('.menu-item');
+            menuItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    menuItems.forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                    // Здесь можно добавить логику загрузки соответствующего контента
+                });
+            });
+            
+            // Пример обработчика для модального окна
+            const closeModalButtons = document.querySelectorAll('.close-modal, .btn-outline');
+            closeModalButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    document.querySelectorAll('.modal').forEach(modal => {
+                        modal.style.display = 'none';
+                    });
+                });
+            });
+            
+            // Пример: открытие модального окна при клике на "Добавить"
+            document.querySelectorAll('.btn-primary').forEach(button => {
+                if (button.textContent.includes('Добавить')) {
+                    button.addEventListener('click', function() {
+                        document.getElementById('addStudentModal').style.display = 'flex';
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
