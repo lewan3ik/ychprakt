@@ -3,14 +3,14 @@
 require_once __DIR__.'/../models/programDiscipline.php';
 require_once __DIR__.'/../connection/connection.php';
 
-class programDisciplineContext extends programDiscipline {
+class programDisciplineContext extends progarmDiscipline {
     public function __construct(array $data) {
         parent::__construct(
-            id: $data['ID'],
-            theme: $data['Topic'],
-            tipy: $data['ClassType'],
-            hours: $data['Hours'],
-            disciplineId: $data['DisciplineID']
+            $data['ID'],
+            $data['Topic'],
+            $data['ClassType'],
+            $data['Hours'],
+            $data['DisciplineID']
         );
     }
 

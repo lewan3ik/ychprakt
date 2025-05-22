@@ -1,16 +1,16 @@
 <?php
 
 class load{
-    public $id;
-    public $disciplineId;
-    public $groupId;
-    public $teacherId;
+    public $ID;
+    public $DisciplineID;
+    public $GroupID;
+    public $TeacherID;
     public $Hours;
-    public function __construct($id, $disciplineId, $groupId, $teacherId, $Hours) {
-        $this->id = $id;
-        $this->disciplineId = $disciplineId;
-        $this->groupId = $groupId;
-        $this->teacherId = $teacherId;
+    public function __construct($ID, $disciplineId, $groupId, $teacherId, $Hours) {
+        $this->ID = $ID;
+        $this->DisciplineID = $disciplineId;
+        $this->GroupID = $groupId;
+        $this->TeacherID = $teacherId;
         $this->Hours = $Hours;
     }
 }

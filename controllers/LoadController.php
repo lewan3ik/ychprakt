@@ -1,9 +1,13 @@
 <?php
-require_once __DIR__ . '/classes/disciplineContext.php';
-require_once __DIR__ . '/classes/groupContext.php';
-require_once __DIR__ . '/classes/teacherContext.php';
-require_once __DIR__ . '/classes/loadContext.php';
+require_once __DIR__ . '/../classes/disciplineContext.php';
+require_once __DIR__ . '/../classes/groupContext.php';
+require_once __DIR__ . '/../classes/teacherContext.php';
+require_once __DIR__ . '/../classes/loadContext.php';
 
+header('Content-Type: application/json');
+$method = $_SERVER['REQUEST_METHOD'];
+if($method === 'GET' &&($_GET['action']??'')==='get'){
+    try {
     $loads = loadContext::select();
     $disciplines = disciplineContext::select();
     $teachers = teacherContext::select();
@@ -34,10 +38,6 @@ require_once __DIR__ . '/classes/loadContext.php';
         $groupName = $groupArray[$student->GroupID]['Name'];
         $disName = $disciplinesArray[$student->DisciplineID]['Name'];
         $teacherName = $teachersArray[$student->TeacherID]['Name'];
-        echo $student->TeacherID;
-        echo $teacherName;
-        echo $student->DisciplineID;
-
         return [
             'ID' => $student->ID,
             'TeacherID' => $teacherName,
@@ -47,3 +47,11 @@ require_once __DIR__ . '/classes/loadContext.php';
         ];
     }, $loads);
 
+    echo json_encode($studentsArray, JSON_UNESCAPED_UNICODE);
+} catch (Exception $e) {
+    error_log($e->getMessage());
+    http_response_code(500);
+    echo json_encode(['error' => 'Failed to fetch students', 'details' => $e->getMessage()]);
+}
+}
+?>

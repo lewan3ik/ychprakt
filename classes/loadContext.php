@@ -16,7 +16,7 @@ class loadContext extends load {
 
     public static function select(): array {
         $allLoads = [];
-        $sql = "SELECT * FROM `Workload`;";
+        $sql = "SELECT * FROM `Load`;";
         $connection = Connection::openConnection();
         $result = Connection::query($sql, $connection);
         while ($row = $result->fetch_assoc()) {
@@ -27,7 +27,7 @@ class loadContext extends load {
     }
     
     public function add(): bool {
-        $sql = "INSERT INTO `Workload`(`DisciplineID`, `GroupID`, `TeacherID`, `Hours`) VALUES (?, ?, ?, ?)";
+        $sql = "INSERT INTO `Load`(`DisciplineID`, `GroupID`, `TeacherID`, `Hours`) VALUES (?, ?, ?, ?)";
         $connection = Connection::openConnection();
         
         if (!$stmt = $connection->prepare($sql)) {
@@ -58,7 +58,7 @@ class loadContext extends load {
     }
 
     public function update(): bool {
-        $sql = "UPDATE `Workload` SET `DisciplineID` = ?, `GroupID` = ?, `TeacherID` = ?, `Hours` = ? WHERE `ID` = ?";
+        $sql = "UPDATE `Load` SET `DisciplineID` = ?, `GroupID` = ?, `TeacherID` = ?, `Hours` = ? WHERE `ID` = ?";
         $connection = Connection::openConnection();
         $stmt = $connection->prepare($sql);
         $stmt->bind_param('iiiii',
@@ -75,7 +75,7 @@ class loadContext extends load {
     }
 
     public function delete($delId): bool {
-        $sql = "DELETE FROM `Workload` WHERE `ID` = ?";
+        $sql = "DELETE FROM `Load` WHERE `ID` = ?";
         $connection = Connection::openConnection();
         $stmt = $connection->prepare($sql);
         $stmt->bind_param('i', $delId);  // Исправлено: используем параметр метода, а не свойство
