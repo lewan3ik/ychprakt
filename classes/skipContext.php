@@ -6,11 +6,11 @@ require_once __DIR__.'/../connection/connection.php';
 class skipContext extends skip {
     public function __construct(array $data) {
         parent::__construct(
-            id: $data['ID'],
-            studentId: $data['StudentID'],
-            leassonId: $data['LessonID'],
-            minuts: $data['Minutes'],
-            file: $data['ExplanationFile']
+            $data['ID'],
+            $data['StudentID'],
+            $data['LessonID'],
+            $data['Minutes'],
+            $data['ExplanationFile']
         );
     }
 
