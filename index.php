@@ -19,19 +19,13 @@ $studentArray = array_map(function($elem) {
 $leassonsArray = array_map(function($elem) {
     return [
         'ID' => $elem->ID,
-        'Date' => $elem->Date
+        'Date' => $elem->date
     ];
 }, $allles);
 
-echo "<pre>";
-print_r($studentArray);
-echo "</pre>";
-
-$studentsArray = array_map(function($student) use ($students,$allles) {
+$studentsArray = array_map(function($student) use ($studentArray,$leassonsArray) {
     $lesDate = $leassonsArray[$student->LessonID]['Date'];
     $studName = $studentArray[$student->StudentID]['Name'];
-
-    echo($studentArray[2]);
 
     return [
         'ID' => $student->ID,

@@ -17,6 +17,10 @@
             --orange-grade: #FF9800;
             --red-grade: #F44336;
         }
+        .sidebar a{
+            color: white;
+            text-decoration: none;
+        }
 
         * {
             margin: 0;
@@ -509,51 +513,51 @@
                 <h2><i class="fas fa-graduation-cap"></i> УИС</h2>
             </div>
             <div class="sidebar-menu">
-                <div class="menu-category">Основное</div>
-                <div class="menu-item">
-                    <i class="fas fa-home"></i> Главная
-                </div>
-                <div class="menu-item">
-                    <i class="fas fa-users"></i> Студенты
-                </div>
-                <div class="menu-item">
-                    <i class="fas fa-layer-group"></i> Группы
-                </div>
-                <div class="menu-item">
-                    <i class="fas fa-book"></i> Дисциплины
-                </div>
-                <div class="menu-item">
-                    <i class="fas fa-chalkboard-teacher"></i> Преподаватели
-                </div>
-
-                <div class="menu-category">Учебный процесс</div>
-                <div class="menu-item">
-                    <i class="fas fa-tasks"></i> Программы дисциплин
-                </div>
-                <div class="menu-item">
-                    <i class="fas fa-chart-bar"></i> Нагрузка
-                </div>
-                <div class="menu-item">
-                    <i class="fas fa-question-circle"></i> Консультации
-                </div>
-                <div class="menu-item active">
-                    <i class="fas fa-user-times"></i> Пропуски
-                </div>
-                <div class="menu-item">
-                    <i class="fas fa-star"></i> Оценки
-                </div>
-
-                <div class="menu-category">Отчеты</div>
-                <div class="menu-item">
-                    <i class="fas fa-file-alt"></i> Отчеты по должникам
-                </div>
-                <div class="menu-item">
-                    <i class="fas fa-file-export"></i> Направления
-                </div>
-                <div class="menu-item">
-                    <i class="fas fa-calendar-check"></i> Посещаемость
-                </div>
-            </div>
+        <div class="menu-category">Основное</div>
+        <a href="index.html" class="menu-item">
+            <i class="fas fa-home"></i> Главная
+        </a>
+        <a href="students.html" class="menu-item">
+            <i class="fas fa-users"></i> Студенты
+        </a>
+        <a href="groups.html" class="menu-item">
+            <i class="fas fa-layer-group"></i> Группы
+        </a>
+        <a href="dis.html" class="menu-item">
+            <i class="fas fa-book"></i> Дисциплины
+        </a>
+        <a href="teach.html" class="menu-item">
+            <i class="fas fa-chalkboard-teacher"></i> Преподаватели
+        </a>
+        
+        <div class="menu-category">Учебный процесс</div>
+        <a href="programdisteach.html" class="menu-item">
+            <i class="fas fa-tasks"></i> Программы дисциплин
+        </a>
+        <a href="nagr.html" class="menu-item">
+            <i class="fas fa-chart-bar"></i> Нагрузка
+        </a>
+        <a href="kons.html" class="menu-item">
+            <i class="fas fa-question-circle"></i> Консультации
+        </a>
+        <a href="skip.html" class="menu-item active">
+            <i class="fas fa-user-times"></i> Пропуски
+        </a>
+        <a href="grades.html" class="menu-item">
+            <i class="fas fa-star"></i> Оценки
+        </a>
+        
+        <div class="menu-category">Отчеты</div>
+        <a href="debtors.html" class="menu-item">
+            <i class="fas fa-file-alt"></i> Отчеты по должникам
+        </a>
+        <a href="directions.html" class="menu-item">
+            <i class="fas fa-file-export"></i> Направления
+        </a>
+        <a href="attendance.html" class="menu-item">
+            <i class="fas fa-calendar-check"></i> Посещаемость
+        </a>
+    </div>
         </div>
 
         <!-- Основное содержимое -->
@@ -579,54 +583,6 @@
                 </div>
             </div>
 
-            <!-- Карточки статистики -->
-            <div class="stats-cards">
-                <div class="stat-card">
-                    <div class="stat-card-header">
-                        <div>
-                            <div class="stat-card-title">Студенты</div>
-                            <div class="stat-card-value">1,248</div>
-                        </div>
-                        <div class="stat-card-icon students">
-                            <i class="fas fa-users"></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-card-header">
-                        <div>
-                            <div class="stat-card-title">Группы</div>
-                            <div class="stat-card-value">42</div>
-                        </div>
-                        <div class="stat-card-icon groups">
-                            <i class="fas fa-layer-group"></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-card-header">
-                        <div>
-                            <div class="stat-card-title">Преподаватели</div>
-                            <div class="stat-card-value">68</div>
-                        </div>
-                        <div class="stat-card-icon teachers">
-                            <i class="fas fa-chalkboard-teacher"></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-card-header">
-                        <div>
-                            <div class="stat-card-title">Дисциплины</div>
-                            <div class="stat-card-value">156</div>
-                        </div>
-                        <div class="stat-card-icon disciplines">
-                            <i class="fas fa-book"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- Пропуски -->
             <div class="content-section">
                 <div class="section-header">
@@ -646,21 +602,18 @@
                         <tr>
                             <th>№</th>
                             <th>Студент</th>
-                            <th>Группа</th>
-                            <th>Дисциплина</th>
                             <th>Дата</th>
-                            <th>Причина</th>
+                            <th>Минуты</th>
+                            <th>Объяснительная</th>
                             <th>Действия</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="skips">
                         <tr>
                             <td>1</td>
                             <td>Иванов И.И.</td>
                             <td>ИСП-31.2</td>
-                            <td>МДК.01.01</td>
                             <td>12.05.2023</td>
-                            <td>Болезнь</td>
                             <td>
                                 <button class="btn btn-outline">
                                     <i class="fas fa-edit"></i>
@@ -674,9 +627,7 @@
                             <td>2</td>
                             <td>Петров П.П.</td>
                             <td>ИСП-31.4</td>
-                            <td>МДК.01.03</td>
                             <td>13.05.2023</td>
-                            <td>Отпуск</td>
                             <td>
                                 <button class="btn btn-outline">
                                     <i class="fas fa-edit"></i>
@@ -751,6 +702,44 @@
     </div>
 
     <script>
+        const dir = '../../controllers/';
+        function fetchskip() {
+    fetch(dir + 'skipController.php?action=get')
+        .then(res => {
+            if (!res.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return res.json();
+        })
+        .then(students => {
+             const tbody = document.getElementById('skips');
+            tbody.innerHTML = ''; // Очистка содержимого tbody
+            console.log(students);
+            students.forEach(student => {
+                const row = `
+                <tr>
+                            <td>${student.ID}</td>
+                            <td>${student.StudentID}</td>
+                            <td>${student.LessonID}</td>
+                            <td>${student.Minutes}</td>
+                            <td>${student.ExplanationFile}</td>
+                            <td>
+                                <button class="btn btn-outline">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-outline">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>`;
+                tbody.insertAdjacentHTML('beforeend', row);
+            });
+        })
+        .catch(err => console.error('Failed to fetch students:', err));
+
+
+}
+        fetchskip();
         document.addEventListener('DOMContentLoaded', function() {
             // Пример обработчика для меню
             const menuItems = document.querySelectorAll('.menu-item');
