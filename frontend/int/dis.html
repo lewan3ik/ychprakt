@@ -319,6 +319,24 @@
         tr:hover {
             background-color: rgba(0, 96, 172, 0.05);
         }
+        .btn-outline:hover {
+        background-color: #0060ac;
+      }
+                    .del:hover{
+        background-color: #c01210;
+      }
+      .modal2 {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
 
         .status-badge {
             padding: 4px 8px;
@@ -645,33 +663,41 @@
                         <label>Наименование *</label>
                         <input type="text" class="form-control" required>
                     </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Преподаватель</label>
-                            <select class="form-control">
-                                <option>Иванов П.С.</option>
-                                <option>Петров А.В.</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Группа</label>
-                            <select class="form-control">
-                                <option>ИСП-31.2</option>
-                                <option>ИСП-31.4</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Часы</label>
-                        <input type="number" class="form-control">
-                    </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-outline">Отмена</button>
-                <button class="btn btn-primary">Сохранить</button>
+                <button class="btn btn-primary" id="sendDiscipline">Сохранить</button>
             </div>
         </div>
+    </div>
+    <div class="modal2" id="addStudentModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title">Редактировать дисциплину</h3>
+          <button class="close-modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <input type="hidden" id="ID">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Наименование</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  required
+                  id="updateName"
+                />
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline">Отмена</button>
+          <button class="btn btn-primary" id="updateStudent">Сохранить</button>
+        </div>
+      </div>
     </div>
 
     <script>
@@ -691,19 +717,31 @@
 
             list.forEach(elem => {
                 const row = `
-                 <tr>
+                 <tr class="elemsList">
                             <td>${elem.ID}</td>
                             <td>${elem.Name}</td>
                             <td>
                                 <button class="btn btn-outline">
                                     <i class="fas fa-edit"></i>
                                 </button>
-                                <button class="btn btn-outline">
+                                <button class="btn btn-outline del">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </td>
                         </tr>`;
                 tbody.insertAdjacentHTML('beforeend', row);
+            });
+             document.querySelectorAll(".elemsList").forEach((elem) => {
+              elem.addEventListener("click", (e) => {
+                if (e.target.classList[0] == "btn" && !e.target.classList.contains('del')) {
+                  const a = e.currentTarget.children[1].firstChild.textContent;
+                  document.querySelector('.modal2').style.display = 'flex';
+                  document.querySelector('#ID').value = e.currentTarget.children[0].firstChild.textContent;
+                  document.querySelector('#updateName').value = e.currentTarget.children[1].firstChild.textContent;
+                }else if(e.target.classList.contains('del')){
+                    delGroup(e.currentTarget.children[0].firstChild.textContent);
+                }
+              });
             });
         })
         .catch(err => console.error('Failed to fetch students:', err));
@@ -726,6 +764,9 @@ fetchDiscipline();
                     document.querySelectorAll('.modal').forEach(modal => {
                         modal.style.display = 'none';
                     });
+                    document.querySelectorAll('.modal2').forEach(modal => {
+                        modal.style.display = 'none';
+                    });
                 });
             });
 
@@ -734,6 +775,117 @@ fetchDiscipline();
                 document.getElementById('addDisciplineModal').style.display = 'flex';
             });
         });
+
+
+                document.querySelector('#sendDiscipline').addEventListener('click',()=>{
+
+            const text = document.querySelector('.form-control').value;
+
+fetch(dir + 'disciplineController.php?action=addDiscipline', {  
+    method: 'POST',  
+    headers: { 'Content-Type': 'application/json' },  
+    body: JSON.stringify({
+        'name': text,
+    })
+})  
+.then(response => {
+     if (!response.ok) { // Проверяем HTTP-статус (200-299)
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      throw new TypeError("Ожидался JSON, но сервер вернул: " + contentType);
+    }
+    
+    return response.json();
+})  
+.then(data => {  
+    if(data.success){
+        location.reload();
+    }else{
+        console.log(data);
+    }
+})  
+.catch(error => {  
+    console.error('Fetch error:', error);  
+}); 
+        })
+        document.querySelector('#updateStudent').addEventListener('click',()=>{
+            const id = document.querySelector('#ID').value;
+            const text = document.querySelector('#updateName').value;
+
+fetch(dir + 'disciplineController.php?action=updateDiscipline', {  
+    method: 'POST',  
+    headers: { 'Content-Type': 'application/json' },  
+    body: JSON.stringify({
+        'id': id,
+        'name': text,
+    })
+})  
+.then(response => {
+     if (!response.ok) { // Проверяем HTTP-статус (200-299)
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      throw new TypeError("Ожидался JSON, но сервер вернул: " + contentType);
+    }
+    
+    return response.json();
+})  
+.then(data => { 
+    if(data.success){
+        location.reload();
+    }else{
+        console.log(data);
+    }
+})  
+.catch(error => {  
+    console.error('Fetch error:', error);  
+}); 
+        })
+
+
+        function delGroup(id){
+        fetch(dir + "disciplineController.php?action=delDiscipline", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id: id
+          }),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              // Проверяем HTTP-статус (200-299)
+              throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const contentType = response.headers.get("content-type");
+            if (!contentType || !contentType.includes("application/json")) {
+              throw new TypeError(
+                "Ожидался JSON, но сервер вернул: " + contentType
+              );
+            }
+            try{
+                return response.json();
+            }catch{
+                return;
+            }
+            
+          })
+          .then((data) => {
+            if (data.success && data.res) {
+              location.reload();
+            } else {
+              alert('Невозможно удалить из-за связи с другой таблицей');
+            }
+          })
+          .catch((error) => {
+            console.error("Fetch error:", error);
+          });
+      }
     </script>
 </body>
 </html>

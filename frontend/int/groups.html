@@ -859,7 +859,7 @@ fetch(dir + 'GroupController.php?action=updateGroup', {
 
 
         function delGroup(id){
-        fetch(dir + "StudentController.php?action=delGroup", {
+        fetch(dir + "GroupController.php?action=delGroup", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -879,18 +879,16 @@ fetch(dir + 'GroupController.php?action=updateGroup', {
               );
             }
             try{
-                return response;
+                return response.json();
             }catch{
                 return;
             }
             
           })
           .then((data) => {
-            console.log(data);
             if (data.success) {
               location.reload();
             } else {
-              console.log(data);
               alert('Невозможно удалить из-за связи с другой таблицей');
             }
           })
