@@ -388,13 +388,33 @@
             display: flex;
             gap: 20px;
         }
+        
 
         .form-row .form-group {
             flex: 1;
         }
 
+            .btn-outline:hover {
+        background-color: #0060ac;
+      }
+                    .del:hover{
+        background-color: #c01210;
+      }
+
         /* Модальные окна */
         .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+                .modal2 {
             display: none;
             position: fixed;
             top: 0;
@@ -653,6 +673,34 @@
             </div>
         </div>
     </div>
+    <div class="modal2" id="addStudentModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title">Редактировать группу</h3>
+          <button class="close-modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <input type="hidden" id="ID">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Наименование</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  required
+                  id="updateName"
+                />
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline">Отмена</button>
+          <button class="btn btn-primary" id="updateStudent">Сохранить</button>
+        </div>
+      </div>
+    </div>
 
     <script>
         const dir = '../../controllers/';
@@ -671,22 +719,35 @@
 
             list.forEach(elem => {
                 const row = `
-                <tr>
+                <tr class="elemsList">
                             <td>${elem.ID}</td>
                             <td>${elem.Name}</td>
                             <td>
                                 <button class="btn btn-outline">
                                     <i class="fas fa-edit"></i>
                                 </button>
-                                <button class="btn btn-outline">
+                                <button class="btn btn-outline del">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </td>
                         </tr>`;
                 tbody.insertAdjacentHTML('beforeend', row);
             });
+            document.querySelectorAll(".elemsList").forEach((elem) => {
+              elem.addEventListener("click", (e) => {
+                if (e.target.classList[0] == "btn" && !e.target.classList.contains('del')) {
+                  const a = e.currentTarget.children[1].firstChild.textContent;
+                  document.querySelector('.modal2').style.display = 'flex';
+                  document.querySelector('#ID').value = e.currentTarget.children[0].firstChild.textContent;
+                  document.querySelector('#updateName').value = e.currentTarget.children[1].firstChild.textContent;
+                }else if(e.target.classList.contains('del')){
+                    delStudent(e.currentTarget.children[0].firstChild.textContent)
+                }
+              });
+            });
         })
         .catch(err => console.error('Failed to fetch students:', err));
+        
 }
 fetchGroups();
         document.addEventListener('DOMContentLoaded', function() {
@@ -708,6 +769,10 @@ fetchGroups();
                     document.querySelectorAll('.modal').forEach(modal => {
                         modal.style.display = 'none';
                     });
+                    document.querySelectorAll(".modal2").forEach((modal) => {
+                    modal.style.display = "none";
+                    });
+                    
                 });
             });
 
