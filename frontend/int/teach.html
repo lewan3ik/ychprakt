@@ -402,6 +402,18 @@
             justify-content: center;
             align-items: center;
         }
+        .modal2 {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
 
         .modal-content {
             background-color: white;
@@ -437,6 +449,15 @@
             justify-content: flex-end;
             gap: 10px;
         }
+        .btn-outline a {
+            color: #333;
+        }
+            .btn-outline:hover {
+        background-color: #0060ac;
+      }
+                    .del:hover{
+        background-color: #c01210;
+      }
 
         .close-modal {
             background: none;
@@ -445,7 +466,11 @@
             cursor: pointer;
             color: var(--gray-color);
         }
-                        .sidebar a{
+        .del:hover{
+            background-color: #c01210;
+        }
+
+        .sidebar a{
             color: white;
             text-decoration: none;
         }
@@ -554,8 +579,8 @@
             <!-- Шапка -->
             <div class="header">
                 <div class="header-title">
-                    <h1>Главная</h1>
-                    <p>Обзорная информация</p>
+                    <h1>Преподаватели</h1>
+                    <p>Информация о преподавателях</p>
                 </div>
                 <div class="header-actions">
                     <div class="search-box">
@@ -585,7 +610,7 @@
                         </button>
                     </div>
                 </div>
-                <table >
+                <table>
                     <thead>
                         <tr>
                             <th>№</th>
@@ -595,7 +620,7 @@
                         </tr>
                     </thead>
                     <tbody id="teachers">
-                        <tr>
+                        <tr class="elemsList">
                             <td>1</td>
                             <td>Иванов Петр Сергеевич</td>
                             <td>ivanov_ps</td>
@@ -603,12 +628,12 @@
                                 <button class="btn btn-outline">
                                     <i class="fas fa-edit"></i>
                                 </button>
-                                <button class="btn btn-outline">
+                                <button class="btn btn-outline del">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </td>
                         </tr>
-                        <tr>
+                        <tr class="elemsList">
                             <td>2</td>
                             <td>Петрова Анна Михайловна</td>
                             <td>petrova_am</td>
@@ -616,7 +641,7 @@
                                 <button class="btn btn-outline">
                                     <i class="fas fa-edit"></i>
                                 </button>
-                                <button class="btn btn-outline">
+                                <button class="btn btn-outline del">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </td>
@@ -634,69 +659,97 @@
         </div>
     </div>
 
-    <style>
-        .quick-access {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-        }
+    <!-- Модальное окно добавления преподавателя -->
+    <div class="modal" id="addTeacherModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Добавить преподавателя</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>ФИО *</label>
+                            <input type="text" class="form-control" required id="teacherName">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Логин *</label>
+                            <input type="text" class="form-control" required id="teacherLogin">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Пароль *</label>
+                            <input type="password" class="form-control" required id="teacherPassword">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline">Отмена</button>
+                <button class="btn btn-primary" id="saveTeacherBtn">Сохранить</button>
+            </div>
+        </div>
+    </div>
 
-        .quick-access-card {
-            background-color: white;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            text-align: center;
-            transition: transform 0.3s;
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .quick-access-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .quick-access-icon {
-            font-size: 2rem;
-            margin-bottom: 10px;
-            color: var(--blue-color);
-        }
-
-        .quick-access-title {
-            font-size: 1rem;
-            font-weight: 500;
-        }
-
-        @media (max-width: 1200px) {
-            .quick-access {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 768px) {
-            .quick-access {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    <!-- Модальное окно редактирования преподавателя -->
+    <div class="modal2" id="editTeacherModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Редактировать преподавателя</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <input type="hidden" id="teacherId">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>ФИО *</label>
+                            <input type="text" class="form-control" required id="editTeacherName">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Логин *</label>
+                            <input type="text" class="form-control" required id="editTeacherLogin">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Новый пароль (оставьте пустым, чтобы не менять)</label>
+                            <input type="password" class="form-control" id="editTeacherPassword">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline">Отмена</button>
+                <button class="btn btn-primary" id="updateTeacherBtn">Сохранить</button>
+            </div>
+        </div>
+    </div>
 
     <script>
         const dir = '../../controllers/';
-        function fetchTeachers(){
-    fetch(dir + 'TeachersController.php?action=get')
-        .then(res => {
-            if (!res.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return res.json();
-        })
-        .then(list => {
-            const tbody = document.getElementById('teachers');
-            tbody.innerHTML = ''; // Очистка содержимого tbody
+        
+        function fetchTeachers() {
+            fetch(dir + 'TeachersController.php?action=get')
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return res.json();
+                })
+                .then(list => {
+                    const tbody = document.getElementById('teachers');
+                    tbody.innerHTML = ''; // Очистка содержимого tbody
 
-            list.forEach(elem => {
-                const row = `
-                <tr>
+                    list.forEach(elem => {
+                        const row = `
+                        <tr class="elemsList">
                             <td>${elem.ID}</td>
                             <td>${elem.FullName}</td>
                             <td>${elem.Login}</td>
@@ -704,24 +757,172 @@
                                 <button class="btn btn-outline">
                                     <i class="fas fa-edit"></i>
                                 </button>
-                                <button class="btn btn-outline">
+                                <button class="btn btn-outline del">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </td>
                         </tr>`;
-                tbody.insertAdjacentHTML('beforeend', row);
+                        tbody.insertAdjacentHTML('beforeend', row);
+                    });
+
+                    // Добавляем обработчики событий для кнопок редактирования и удаления
+                    document.querySelectorAll(".elemsList").forEach((elem) => {
+                        elem.addEventListener("click", (e) => {
+                            if (e.target.classList[0] == "btn" && !e.target.classList.contains('del')) {
+                                // Редактирование преподавателя
+                                const teacherId = e.currentTarget.children[0].textContent;
+                                const teacherName = e.currentTarget.children[1].textContent;
+                                const teacherLogin = e.currentTarget.children[2].textContent;
+                                
+                                document.querySelector('.modal2').style.display = 'flex';
+                                document.querySelector('#teacherId').value = teacherId;
+                                document.querySelector('#editTeacherName').value = teacherName;
+                                document.querySelector('#editTeacherLogin').value = teacherLogin;
+                            } else if(e.target.classList.contains('del')) {
+                                // Удаление преподавателя
+                                const teacherId = e.currentTarget.children[0].textContent;
+                                if(confirm('Вы уверены, что хотите удалить этого преподавателя?')) {
+                                    deleteTeacher(teacherId);
+                                }
+                            }
+                        });
+                    });
+                })
+                .catch(err => console.error('Failed to fetch teachers:', err));
+        }
+
+        // Функция для добавления преподавателя
+        function addTeacher(name, login, password) {
+            fetch(dir + 'TeachersController.php?action=add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: name,
+                    login: login,
+                    password: password
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Ошибка при добавлении преподавателя: ' + (data.message || 'Неизвестная ошибка'));
+                }
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+                alert('Произошла ошибка при добавлении преподавателя');
             });
-        })
-        .catch(err => console.error('Failed to fetch students:', err));
-}
-fetchTeachers();
+        }
+
+        // Функция для обновления преподавателя
+        function updateTeacher(id, name, login, password) {
+            fetch(dir + 'TeachersController.php?action=update', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id: id,
+                    name: name,
+                    login: login,
+                    password: password
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Ошибка при обновлении преподавателя: ' + (data.message || 'Неизвестная ошибка'));
+                }
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+                alert('Произошла ошибка при обновлении преподавателя');
+            });
+        }
+
+        // Функция для удаления преподавателя
+        function deleteTeacher(id) {
+            fetch(dir + 'TeachersController.php?action=del', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id: id
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Ошибка при удалении преподавателя: ' + (data.message || 'Неизвестная ошибка'));
+                }
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+                alert('Произошла ошибка при удалении преподавателя');
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
-            // Пример обработчика для меню
-            const menuItems = document.querySelectorAll('.menu-item');
-            menuItems.forEach(item => {
-                item.addEventListener('click', function() {
-                    menuItems.forEach(i => i.classList.remove('active'));
-                    this.classList.add('active');
+            // Загружаем список преподавателей при загрузке страницы
+            fetchTeachers();
+
+            // Обработчик для кнопки добавления преподавателя
+            document.getElementById('addTeacherBtn').addEventListener('click', function() {
+                document.getElementById('addTeacherModal').style.display = 'flex';
+            });
+
+            // Обработчик для сохранения нового преподавателя
+            document.getElementById('saveTeacherBtn').addEventListener('click', function() {
+                const name = document.getElementById('teacherName').value;
+                const login = document.getElementById('teacherLogin').value;
+                const password = document.getElementById('teacherPassword').value;
+                
+                if (name && login && password) {
+                    addTeacher(name, login, password);
+                } else {
+                    alert('Пожалуйста, заполните все обязательные поля');
+                }
+            });
+
+            // Обработчик для обновления преподавателя
+            document.getElementById('updateTeacherBtn').addEventListener('click', function() {
+                const id = document.getElementById('teacherId').value;
+                const name = document.getElementById('editTeacherName').value;
+                const login = document.getElementById('editTeacherLogin').value;
+                const password = document.getElementById('editTeacherPassword').value;
+                
+                if (id && name && login) {
+                    updateTeacher(id, name, login, password);
+                } else {
+                    alert('Пожалуйста, заполните все обязательные поля');
+                }
+            });
+
+            // Закрытие модальных окон
+            const closeModalButtons = document.querySelectorAll('.close-modal, .btn-outline');
+            closeModalButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    document.querySelectorAll('.modal, .modal2').forEach(modal => {
+                        modal.style.display = 'none';
+                    });
                 });
             });
         });
