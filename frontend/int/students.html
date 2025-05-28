@@ -731,6 +731,7 @@
         </div>
         <div class="modal-body">
           <form>
+            <input type="hidden" id="ID">
             <div class="form-row">
               <div class="form-group">
                 <label>ФИО *</label>
@@ -761,7 +762,7 @@
         </div>
         <div class="modal-footer">
           <button class="btn btn-outline">Отмена</button>
-          <button class="btn btn-primary" id="sendStudent">Сохранить</button>
+          <button class="btn btn-primary" id="updateStudent">Сохранить</button>
         </div>
       </div>
     </div>
@@ -828,6 +829,7 @@
                   const a = e.currentTarget.children[1].firstChild.textContent;
                   document.querySelector('.modal2').style.display = 'flex';
                   document.querySelector('#updateDate').value = e.currentTarget.children[3].firstChild.textContent;
+                  document.querySelector('#ID').value = e.currentTarget.children[0].firstChild.textContent;
                   document.querySelector('#updateName').value = e.currentTarget.children[1].firstChild.textContent;
                   const sel = document.querySelector('#update-student');
                   let index = 0;
@@ -913,6 +915,47 @@
             console.error("Fetch error:", error);
           });
       });
+      document.querySelector('#updateStudent').addEventListener('click',()=>{
+                $name = document.querySelector("#updateName").value;
+        $group = document.getElementById("update-student").value;
+        $date = document.getElementById("updateDate").value;
+        $id = document.getElementById("ID").value;
+        fetch(dir + "StudentController.php?action=updateStudent", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id: $id,
+            name: $name,
+            group: $group,
+            date: $date,
+          }),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              // Проверяем HTTP-статус (200-299)
+              throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const contentType = response.headers.get("content-type");
+            if (!contentType || !contentType.includes("application/json")) {
+              throw new TypeError(
+                "Ожидался JSON, но сервер вернул: " + contentType
+              );
+            }
+
+            return response.json();
+          })
+          .then((data) => {
+            if (data.success) {
+              location.reload();
+            } else {
+              console.log(data);
+            }
+          })
+          .catch((error) => {
+            console.error("Fetch error:", error);
+          });
+      })
     </script>
   </body>
 </html>
