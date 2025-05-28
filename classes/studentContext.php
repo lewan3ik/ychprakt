@@ -53,7 +53,7 @@ class studentContext extends students {
             $this->login,
             password_hash($this->password, PASSWORD_DEFAULT),
             $this->ExpulsionDate,
-            $this->GroupId)) {
+            $this->GroupID)) {
             echo "Bind failed: " . $stmt->error;
             return false;
         }

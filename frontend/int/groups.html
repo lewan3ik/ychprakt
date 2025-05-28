@@ -520,7 +520,7 @@
         <a href="students.html" class="menu-item">
             <i class="fas fa-users"></i> Студенты
         </a>
-        <a href="groups.html" class="menu-item  active">
+        <a href="groups.html" class="menu-item active">
             <i class="fas fa-layer-group"></i> Группы
         </a>
         <a href="dis.html" class="menu-item">
@@ -531,31 +531,20 @@
         </a>
         
         <div class="menu-category">Учебный процесс</div>
-        <a href="programs.html" class="menu-item">
+        <a href="programdisteach.html" class="menu-item">
             <i class="fas fa-tasks"></i> Программы дисциплин
         </a>
-        <a href="workload.html" class="menu-item">
+        <a href="nagr.html" class="menu-item">
             <i class="fas fa-chart-bar"></i> Нагрузка
         </a>
         <a href="kons.html" class="menu-item">
             <i class="fas fa-question-circle"></i> Консультации
         </a>
-        <a href="absences.html" class="menu-item">
+        <a href="skip.html" class="menu-item">
             <i class="fas fa-user-times"></i> Пропуски
         </a>
-        <a href="grades.html" class="menu-item">
+        <a href="marks.html" class="menu-item">
             <i class="fas fa-star"></i> Оценки
-        </a>
-        
-        <div class="menu-category">Отчеты</div>
-        <a href="debtors.html" class="menu-item">
-            <i class="fas fa-file-alt"></i> Отчеты по должникам
-        </a>
-        <a href="directions.html" class="menu-item">
-            <i class="fas fa-file-export"></i> Направления
-        </a>
-        <a href="attendance.html" class="menu-item">
-            <i class="fas fa-calendar-check"></i> Посещаемость
         </a>
     </div>
         </div>
@@ -593,7 +582,7 @@
                             <input type="text" placeholder="Поиск...">
                         </div>
                         <button class="btn btn-primary" id="addDisciplineBtn">
-                            <i class="fas fa-plus"></i> Добавить дисциплину
+                            <i class="fas fa-plus"></i> Добавить группу
                         </button>
                     </div>
                 </div>
@@ -647,7 +636,7 @@
     <div class="modal" id="addDisciplineModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title">Добавить дисциплину</h3>
+                <h3 class="modal-title">Добавить группу</h3>
                 <button class="close-modal">&times;</button>
             </div>
             <div class="modal-body">
@@ -656,31 +645,11 @@
                         <label>Наименование *</label>
                         <input type="text" class="form-control" required>
                     </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Преподаватель</label>
-                            <select class="form-control">
-                                <option>Иванов П.С.</option>
-                                <option>Петров А.В.</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Группа</label>
-                            <select class="form-control">
-                                <option>ИСП-31.2</option>
-                                <option>ИСП-31.4</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Часы</label>
-                        <input type="number" class="form-control">
-                    </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-outline">Отмена</button>
-                <button class="btn btn-primary">Сохранить</button>
+                <button class="btn btn-primary" id="sendGroup">Сохранить</button>
             </div>
         </div>
     </div>
@@ -721,6 +690,8 @@
 }
 fetchGroups();
         document.addEventListener('DOMContentLoaded', function() {
+
+
             // Пример обработчика для меню
             const menuItems = document.querySelectorAll('.menu-item');
             menuItems.forEach(item => {
@@ -745,6 +716,42 @@ fetchGroups();
                 document.getElementById('addDisciplineModal').style.display = 'flex';
             });
         });
+
+
+        document.querySelector('#sendGroup').addEventListener('click',()=>{
+
+            const text = document.querySelector('.form-control').value;
+
+fetch(dir + 'GroupController.php?action=addGroup', {  
+    method: 'POST',  
+    headers: { 'Content-Type': 'application/json' },  
+    body: JSON.stringify({
+        'name': text,
+    })
+})  
+.then(response => {
+     if (!response.ok) { // Проверяем HTTP-статус (200-299)
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      throw new TypeError("Ожидался JSON, но сервер вернул: " + contentType);
+    }
+    
+    return response.json();
+})  
+.then(data => {  
+    if(data.success){
+        location.reload();
+    }else{
+        console.log(data);
+    }
+})  
+.catch(error => {  
+    console.error('Fetch error:', error);  
+}); 
+        })
     </script>
 </body>
 </html>
