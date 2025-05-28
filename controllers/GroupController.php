@@ -25,9 +25,10 @@ if($method === 'GET' &&($_GET['action']??'')==='get'){
     exit();
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action']) && $_GET['action'] === 'addGroup') {
-    try {
-        $input = json_decode(file_get_contents("php://input"), true);
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action'])) {
+    $input = json_decode(file_get_contents("php://input"), true);
+    if($_GET['action'] === 'addGroup'){
+        try {
         $newGroup = new groupContext(['ID'=>null,'Name'=> $input['name']]);
         $newGroup->add();
         $resp = [
@@ -45,5 +46,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action']) && $_GET['ac
         ]);
     }
     exit();
+    }
+     if($_GET['action'] === 'updateGroup'){
+        try {
+        $newGroup = new groupContext(['ID'=>$input['id'],'Name'=> $input['name']]);
+        $newGroup->update();
+        $resp = [
+            "success" => true,
+            "message" => "Группа успешно добавлена",
+            "data" => $newGroup->ID
+        ];
+        echo json_encode($resp);
+    } catch (Exception $e) {
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'error' => 'Ошибка при добавлении группы',
+            'details' => $e->getMessage()
+        ]);
+    }
+    exit();
+    }
+    if($_GET['action'] ==='delGroup'){
+        try {
+            $id = $input['id'];
+            groupContext::delete($id);
+        $resp = [
+            "success" => true,
+            "message" => "Группа успешно добавлена",
+            "data" => $id
+        ];
+        echo json_encode($resp);
+    } catch (Exception $e) {
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'error' => 'Ошибка при добавлении группы',
+            'details' => $e->getMessage()
+        ]);
+    }
+    exit();
+    }
 }
 ?>
