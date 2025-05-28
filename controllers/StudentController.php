@@ -83,5 +83,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action'])) {
     }
     exit();
     }
+    if($_GET['action'] ==='delStudent'){
+        try {
+            $id = $input['id'];
+            studentContext::delete($id);
+        $resp = [
+            "success" => true,
+            "message" => "Группа успешно добавлена",
+            "data" => $id
+        ];
+        echo json_encode($resp);
+    } catch (Exception $e) {
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'error' => 'Ошибка при добавлении группы',
+            'details' => $e->getMessage()
+        ]);
+    }
+    exit();
+    }
 }
 ?>

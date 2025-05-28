@@ -468,6 +468,9 @@
         cursor: pointer;
         color: var(--gray-color);
       }
+      .del:hover{
+        background-color: #c01210;
+      }
 
       /* Адаптивность */
       @media (max-width: 1200px) {
@@ -816,7 +819,7 @@
                                 <button class="btn btn-outline">
                                     <a href="#" class="fas fa-edit"></a>
                                 </button>
-                                <button class="btn btn-outline">
+                                <button class="btn btn-outline del">
                                     <a href="#" class="fas fa-trash"></a>
                                 </button>
                             </td>
@@ -825,7 +828,7 @@
             });
             document.querySelectorAll(".elemsList").forEach((elem) => {
               elem.addEventListener("click", (e) => {
-                if (e.target.classList[0] == "btn") {
+                if (e.target.classList[0] == "btn" && !e.target.classList.contains('del')) {
                   const a = e.currentTarget.children[1].firstChild.textContent;
                   document.querySelector('.modal2').style.display = 'flex';
                   document.querySelector('#updateDate').value = e.currentTarget.children[3].firstChild.textContent;
@@ -839,6 +842,8 @@
                     }
                   })
                   sel.selectedIndex = index;
+                }else if(e.target.classList.contains('del')){
+                    delStudent(e.currentTarget.children[0].firstChild.textContent)
                 }
               });
             });
@@ -956,6 +961,43 @@
             console.error("Fetch error:", error);
           });
       })
+
+
+      function delStudent(id){
+        fetch(dir + "StudentController.php?action=delStudent", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id: id
+          }),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              // Проверяем HTTP-статус (200-299)
+              throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const contentType = response.headers.get("content-type");
+            if (!contentType || !contentType.includes("application/json")) {
+              throw new TypeError(
+                "Ожидался JSON, но сервер вернул: " + contentType
+              );
+            }
+
+            return response.json();
+          })
+          .then((data) => {
+            console.log(data);
+            if (data.success) {
+              location.reload();
+            } else {
+              console.log(data);
+            }
+          })
+          .catch((error) => {
+            console.error("Fetch error:", error);
+          });
+      }
     </script>
   </body>
 </html>
