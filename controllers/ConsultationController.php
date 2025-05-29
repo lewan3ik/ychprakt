@@ -31,8 +31,8 @@ if($method === 'GET' &&($_GET['action']??'')==='get'){
         return [
             'ID' => $elem->ID,
             'Date' => $elem->Date,
-            'GroupID'=>$groupName,
-            'TeacherID'=>$teacherName
+            'GroupID'=>$elem->GroupID,
+            'TeacherID'=>$elem->TeacherID
         ];
     }, $cons);
     echo json_encode($consArray, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
@@ -41,5 +41,73 @@ if($method === 'GET' &&($_GET['action']??'')==='get'){
     http_response_code(500);
     echo json_encode(['error' => 'Failed to fetch students', 'details' => $e->getMessage()]);
 }
+}
+
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action'])) {
+    $input = json_decode(file_get_contents("php://input"), true);
+    if($_GET['action'] === 'add'){
+        try {
+        $newGroup = new consultationContext(['ID'=>null,'Date'=> $input['date'],
+    'TeacherID'=>$input['teacherId'],'GroupID' =>$input['studentId']]);
+        $newGroup->add();
+        $resp = [
+            "success" => true,
+            "message" => "Группа успешно добавлена",
+            "data" => $newGroup->TeacherID
+        ];
+        echo json_encode($resp);
+    } catch (Exception $e) {
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'error' => 'Ошибка при добавлении группы',
+            'details' => $e->getMessage()
+        ]);
+    }
+    exit();
+    }
+    if($_GET['action'] === 'update'){
+        try {
+        $newGroup = new consultationContext(['ID'=>$input['id'],'Date'=> $input['date'],
+    'TeacherID'=>$input['teacherId'],'GroupID' =>$input['studentId']]);
+        $newGroup->update();
+        $resp = [
+            "success" => true,
+            "message" => "Группа успешно добавлена",
+            "data" => $newGroup->ID
+        ];
+        echo json_encode($resp);
+    } catch (Exception $e) {
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'error' => 'Ошибка при добавлении группы',
+            'details' => $e->getMessage()
+        ]);
+    }
+    exit();
+    }
+    if($_GET['action'] ==='del'){
+        try {
+            $id = $input['id'];
+            $res = consultationContext::delete($id);
+        $resp = [
+            "success" => true,
+            "message" => "Группа успешно добавлена",
+            "data" => $id,
+            "res" => $res
+        ];
+        echo json_encode($resp);
+    } catch (Exception $e) {
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'error' => 'Ошибка при добавлении группы',
+            'details' => $e->getMessage()
+        ]);
+    }
+    exit();
+    }
 }
 ?>

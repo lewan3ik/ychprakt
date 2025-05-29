@@ -29,7 +29,7 @@
             background-color: var(--light-gray);
             color: #333;
         }
-                .sidebar a{
+        .sidebar a{
             color: white;
             text-decoration: none;
         }
@@ -406,6 +406,18 @@
             justify-content: center;
             align-items: center;
         }
+        .modal2 {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
 
         .modal-content {
             background-color: white;
@@ -441,6 +453,12 @@
             justify-content: flex-end;
             gap: 10px;
         }
+        .btn-outline a {
+            color: #333;
+        }
+        .btn-outline:hover {
+            background-color: #0060ac;
+        }
 
         .close-modal {
             background: none;
@@ -448,6 +466,9 @@
             font-size: 1.5rem;
             cursor: pointer;
             color: var(--gray-color);
+        }
+        .del:hover{
+            background-color: #c01210;
         }
 
         /* Адаптивность */
@@ -512,41 +533,41 @@
             <div class="sidebar-header">
                 <h2><i class="fas fa-graduation-cap"></i> УИС</h2>
             </div>
-           <div class="sidebar-menu">
-        <div class="menu-category">Основное</div>
-        <a href="index.html" class="menu-item">
-            <i class="fas fa-home"></i> Главная
-        </a>
-        <a href="students.html" class="menu-item">
-            <i class="fas fa-users"></i> Студенты
-        </a>
-        <a href="groups.html" class="menu-item">
-            <i class="fas fa-layer-group"></i> Группы
-        </a>
-        <a href="dis.html" class="menu-item">
-            <i class="fas fa-book"></i> Дисциплины
-        </a>
-        <a href="teach.html" class="menu-item">
-            <i class="fas fa-chalkboard-teacher"></i> Преподаватели
-        </a>
-        
-        <div class="menu-category">Учебный процесс</div>
-        <a href="programdisteach.html" class="menu-item">
-            <i class="fas fa-tasks"></i> Программы дисциплин
-        </a>
-        <a href="nagr.html" class="menu-item">
-            <i class="fas fa-chart-bar"></i> Нагрузка
-        </a>
-        <a href="kons.html" class="menu-item active">
-            <i class="fas fa-question-circle"></i> Консультации
-        </a>
-        <a href="skip.html" class="menu-item">
-            <i class="fas fa-user-times"></i> Пропуски
-        </a>
-        <a href="marks.html" class="menu-item">
-            <i class="fas fa-star"></i> Оценки
-        </a>
-    </div>
+            <div class="sidebar-menu">
+                <div class="menu-category">Основное</div>
+                <a href="index.html" class="menu-item">
+                    <i class="fas fa-home"></i> Главная
+                </a>
+                <a href="students.html" class="menu-item">
+                    <i class="fas fa-users"></i> Студенты
+                </a>
+                <a href="groups.html" class="menu-item">
+                    <i class="fas fa-layer-group"></i> Группы
+                </a>
+                <a href="dis.html" class="menu-item">
+                    <i class="fas fa-book"></i> Дисциплины
+                </a>
+                <a href="teach.html" class="menu-item">
+                    <i class="fas fa-chalkboard-teacher"></i> Преподаватели
+                </a>
+                
+                <div class="menu-category">Учебный процесс</div>
+                <a href="programdisteach.html" class="menu-item">
+                    <i class="fas fa-tasks"></i> Программы дисциплин
+                </a>
+                <a href="nagr.html" class="menu-item">
+                    <i class="fas fa-chart-bar"></i> Нагрузка
+                </a>
+                <a href="kons.html" class="menu-item active">
+                    <i class="fas fa-question-circle"></i> Консультации
+                </a>
+                <a href="skip.html" class="menu-item">
+                    <i class="fas fa-user-times"></i> Пропуски
+                </a>
+                <a href="marks.html" class="menu-item">
+                    <i class="fas fa-star"></i> Оценки
+                </a>
+            </div>
         </div>
 
         <!-- Основное содержимое -->
@@ -591,36 +612,36 @@
                         <tr>
                             <th>№</th>
                             <th>Преподаватель</th>
-                            <th>Дисциплина</th>
-                            <th>Дата</th>
+                            <th>Группа</th>
+                            <th>Дата и время</th>
                             <th>Действия</th>
                         </tr>
                     </thead>
                     <tbody id="consultations">
-                        <tr>
+                        <tr class="elemsList">
                             <td>1</td>
                             <td>Петров П.П.</td>
-                            <td>МДК.01.01</td>
+                            <td>Иванов И.И.</td>
                             <td>12.05.2023 14:00</td>
                             <td>
                                 <button class="btn btn-outline">
                                     <i class="fas fa-edit"></i>
                                 </button>
-                                <button class="btn btn-outline">
+                                <button class="btn btn-outline del">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </td>
                         </tr>
-                        <tr>
+                        <tr class="elemsList">
                             <td>2</td>
                             <td>Сидоров С.С.</td>
-                            <td>МДК.01.03</td>
+                            <td>Петров П.П.</td>
                             <td>13.05.2023 16:00</td>
                             <td>
                                 <button class="btn btn-outline">
                                     <i class="fas fa-edit"></i>
                                 </button>
-                                <button class="btn btn-outline">
+                                <button class="btn btn-outline del">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </td>
@@ -650,103 +671,356 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label>Преподаватель *</label>
-                            <select class="form-control" required>
-                                <option>Иванов П.С.</option>
-                                <option>Петров А.В.</option>
+                            <select class="form-control" required id="consultationTeacher">
+                                <!-- Заполнится динамически -->
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Студент *</label>
-                            <select class="form-control" required>
-                                <option>Петров П.П.</option>
-                                <option>Сидоров С.С.</option>
+                            <label>Группа</label>
+                            <select class="form-control" required id="consultationStudent">
+                                <!-- Заполнится динамически -->
                             </select>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Дисциплина *</label>
-                            <select class="form-control" required>
-                                <option>МДК.01.01</option>
-                                <option>МДК.01.03</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
                             <label>Дата и время *</label>
-                            <input type="datetime-local" class="form-control" required>
+                            <input type="date" class="form-control" required id="consultationDate">
                         </div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-outline">Отмена</button>
-                <button class="btn btn-primary">Сохранить</button>
+                <button class="btn btn-primary" id="saveConsultationBtn">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно редактирования консультации -->
+    <div class="modal2" id="editConsultationModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Редактировать консультацию</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <input type="hidden" id="editConsultationId">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Преподаватель *</label>
+                            <select class="form-control" required id="editConsultationTeacher">
+                                <!-- Заполнится динамически -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Группа</label>
+                            <select class="form-control" required id="editConsultationStudent">
+                                <!-- Заполнится динамически -->
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Дата и время *</label>
+                            <input type="date" class="form-control" required id="editConsultationDate">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline">Отмена</button>
+                <button class="btn btn-primary" id="updateConsultationBtn">Сохранить</button>
             </div>
         </div>
     </div>
 
     <script>
-       const dir = '../../controllers/';
-
-        function fetchConsultation() {
-    fetch(dir + 'ConsultationController.php?action=get')
+        const dir = '../../controllers/';
+        let GroupList = [];
+        let studentsList = [];
+        let disciplinesList = [];
+        let consultationsList = [];
+function fetchGroups() {
+    fetch(dir + 'GroupController.php?action=get')
         .then(res => {
             if (!res.ok) {
                 throw new Error('Network response was not ok');
             }
             return res.json();
         })
-        .then(students => {
-             const tbody = document.getElementById('consultations');
-            tbody.innerHTML = ''; // Очистка содержимого tbody
-            console.log(students);
-            students.forEach(student => {
-                const row = `
-                <tr>
-                            <td>${student.ID}</td>
-                            <td>${student.TeacherID}</td>
-                            <td>${student.GroupID}</td>
-                            <td>${student.Date}</td>
-                            <td>
-                                <button class="btn btn-outline">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="btn btn-outline">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </td>
-                        </tr>`;
-                tbody.insertAdjacentHTML('beforeend', row);
-            });
+        .then(list => {
+             GroupList = list;
+                    // Заполняем select в модальных окнах
+                    const teacherSelects = [
+                        document.getElementById('consultationStudent'),
+                        document.getElementById('editConsultationStudent')
+                    ];
+                    
+                    teacherSelects.forEach(select => {
+                        select.innerHTML = '';
+                        list.forEach(teacher => {
+                            const option = document.createElement('option');
+                            option.value = teacher.ID;
+                            option.textContent = teacher.Name;
+                            select.appendChild(option);
+                        });
+                    });
+            
         })
         .catch(err => console.error('Failed to fetch students:', err));
-
-
+        
 }
-        fetchConsultation();
+        function fetchTeachers() {
+            fetch(dir + 'TeachersController.php?action=get')
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return res.json();
+                })
+                .then(list => {
+                    teachersList = list;
+                    // Заполняем select в модальных окнах
+                    const teacherSelects = [
+                        document.getElementById('consultationTeacher'),
+                        document.getElementById('editConsultationTeacher')
+                    ];
+                    
+                    teacherSelects.forEach(select => {
+                        select.innerHTML = '';
+                        list.forEach(teacher => {
+                            const option = document.createElement('option');
+                            option.value = teacher.ID;
+                            option.textContent = teacher.FullName;
+                            select.appendChild(option);
+                        });
+                    });
+                })
+                .catch(err => console.error('Failed to fetch teachers:', err));
+        }
+        function fetchConsultations() {
+            fetch(dir + 'ConsultationController.php?action=get')
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return res.json();
+                })
+                .then(list => {
+                    consultationsList = list;
+                    const tbody = document.getElementById('consultations');
+                    tbody.innerHTML = '';
+
+                    list.forEach(consultation => {
+                        // Находим преподавателя, студента и дисциплину по ID
+                        const teacher = teachersList.find(t => t.ID == consultation.TeacherID) || { FullName: 'Неизвестно' };
+                        const group = GroupList.find(s => s.ID == consultation.GroupID) || { FullName: 'Неизвестно' };
+                        
+                        // Форматируем дату
+                        
+                        
+                        const row = `
+                            <tr class="elemsList">
+                                <td>${consultation.ID}</td>
+                                <td>${teacher.FullName}</td>
+                                <td>${group.Name}</td>
+                                <td>${consultation.Date}</td>
+                                <td>
+                                    <button class="btn btn-outline">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-outline del">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>`;
+                        tbody.insertAdjacentHTML('beforeend', row);
+                    });
+
+                    // Добавляем обработчики событий для кнопок редактирования и удаления
+                    document.querySelectorAll(".elemsList").forEach((elem) => {
+                        elem.addEventListener("click", (e) => {
+                            if (e.target.classList[0] == "btn" && !e.target.classList.contains('del')) {
+                                // Редактирование консультации
+                                const consultationId = e.currentTarget.children[0].textContent;
+                                const consultation = consultationsList.find(c => c.ID == consultationId);
+                                
+                                if (consultation) {
+                                    document.querySelector('.modal2').style.display = 'flex';
+                                    document.querySelector('#editConsultationId').value = consultation.ID;
+                                    
+                                    // Устанавливаем дату и время
+                                    document.querySelector('#editConsultationDate').value = consultation.Date;
+                                    
+                                    // Устанавливаем выбранного преподавателя
+                                    const teacherSelect = document.getElementById('editConsultationTeacher');
+                                    for (let i = 0; i < teacherSelect.options.length; i++) {
+                                        if (teacherSelect.options[i].value == consultation.TeacherID) {
+                                            teacherSelect.selectedIndex = i;
+                                            break;
+                                        }
+                                    }
+                                    
+                                    // Устанавливаем выбранного студента
+                                    const studentSelect = document.getElementById('editConsultationStudent');
+                                    for (let i = 0; i < studentSelect.options.length; i++) {
+                                        if (studentSelect.options[i].value == consultation.StudentID) {
+                                            studentSelect.selectedIndex = i;
+                                            break;
+                                        }
+                                    }
+                                
+                                }
+                            } else if(e.target.classList.contains('del')) {
+                                // Удаление консультации
+                                const consultationId = e.currentTarget.children[0].textContent;
+                                if(confirm('Вы уверены, что хотите удалить эту консультацию?')) {
+                                    deleteConsultation(consultationId);
+                                }
+                            }
+                        });
+                    });
+                })
+                .catch(err => console.error('Failed to fetch consultations:', err));
+        }
+
+        // Добавление новой консультации
+        function addConsultation(teacherId, studentId, date) {
+            fetch(dir + 'ConsultationController.php?action=add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    teacherId: teacherId,
+                    studentId: studentId,
+                    date: date
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Ошибка при добавлении консультации: ' + (data.message || 'Неизвестная ошибка'));
+                }
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+                alert('Произошла ошибка при добавлении консультации');
+            });
+        }
+
+        // Обновление консультации
+        function updateConsultation(id, teacherId, studentId, date) {
+            fetch(dir + 'ConsultationController.php?action=update', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id: id,
+                    teacherId: teacherId,
+                    studentId: studentId,
+                    date: date
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Ошибка при обновлении консультации: ' + (data.message || 'Неизвестная ошибка'));
+                }
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+                alert('Произошла ошибка при обновлении консультации');
+            });
+        }
+
+        // Удаление консультации
+        function deleteConsultation(id) {
+            fetch(dir + 'ConsultationController.php?action=del', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id: id
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Ошибка при удалении консультации: ' + (data.message || 'Неизвестная ошибка'));
+                }
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+                alert('Произошла ошибка при удалении консультации');
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
-            // Пример обработчика для меню
-            const menuItems = document.querySelectorAll('.menu-item');
-            menuItems.forEach(item => {
-                item.addEventListener('click', function() {
-                    menuItems.forEach(i => i.classList.remove('active'));
-                    this.classList.add('active');
-                });
+            // Загружаем данные при загрузке страницы
+            fetchTeachers();
+            fetchGroups();
+            fetchConsultations();
+
+            // Обработчик для кнопки добавления консультации
+            document.getElementById('addConsultationBtn').addEventListener('click', function() {
+                document.getElementById('addConsultationModal').style.display = 'flex';
             });
 
-            // Пример обработчика для модального окна
+            // Обработчик для сохранения новой консультации
+            document.getElementById('saveConsultationBtn').addEventListener('click', function() {
+                const teacherId = document.getElementById('consultationTeacher').value;
+                const studentId = document.getElementById('consultationStudent').value;
+                const date = document.getElementById('consultationDate').value;
+                
+                if (teacherId && studentId && date) {
+                    addConsultation(teacherId, studentId, date);
+                } else {
+                    alert('Пожалуйста, заполните все обязательные поля');
+                }
+            });
+
+            // Обработчик для обновления консультации
+            document.getElementById('updateConsultationBtn').addEventListener('click', function() {
+                const id = document.getElementById('editConsultationId').value;
+                const teacherId = document.getElementById('editConsultationTeacher').value;
+                const studentId = document.getElementById('editConsultationStudent').value;
+                const date = document.getElementById('editConsultationDate').value;
+                
+                if (id && teacherId && studentId && date) {
+                    updateConsultation(id, teacherId, studentId, date);
+                } else {
+                    alert('Пожалуйста, заполните все обязательные поля');
+                }
+            });
+
+            // Закрытие модальных окон
             const closeModalButtons = document.querySelectorAll('.close-modal, .btn-outline');
             closeModalButtons.forEach(button => {
                 button.addEventListener('click', function() {
-                    document.querySelectorAll('.modal').forEach(modal => {
+                    document.querySelectorAll('.modal, .modal2').forEach(modal => {
                         modal.style.display = 'none';
                     });
                 });
-            });
-
-            // Пример: открытие модального окна при клике на "Добавить консультацию"
-            document.getElementById('addConsultationBtn').addEventListener('click', function() {
-                document.getElementById('addConsultationModal').style.display = 'flex';
             });
         });
     </script>

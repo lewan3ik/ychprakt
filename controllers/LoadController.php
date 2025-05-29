@@ -9,40 +9,13 @@ $method = $_SERVER['REQUEST_METHOD'];
 if($method === 'GET' &&($_GET['action']??'')==='get'){
     try {
     $loads = loadContext::select();
-    $disciplines = disciplineContext::select();
-    $teachers = teacherContext::select();
-    $groups = groupContext::select();
 
-    $groupArray = array_map(function($elem) {
-        return [
-            'ID' => $elem->ID,
-            'Name' => $elem->Name
-        ];
-    }, $groups);
-
-    $disciplinesArray = array_map(function($elem) {
-        return [
-            'ID' => $elem->ID,
-            'Name' => $elem->Name
-        ];
-    }, $disciplines);
-
-    $teachersArray = array_map(function($elem) {
-        return [
-            'ID' => $elem->ID,
-            'Name' => $elem->FullName
-        ];
-    }, $teachers);
-
-    $studentsArray = array_map(function($student) use ($groupArray,$teachersArray,$disciplinesArray) {
-        $groupName = $groupArray[$student->GroupID]['Name'];
-        $disName = $disciplinesArray[$student->DisciplineID]['Name'];
-        $teacherName = $teachersArray[$student->TeacherID]['Name'];
+    $studentsArray = array_map(function($student) {
         return [
             'ID' => $student->ID,
-            'TeacherID' => $teacherName,
-            'DisciplineID' => $disName,
-            'GroupID' => $groupName,
+            'TeacherID' => $student->TeacherID,
+            'DisciplineID' => $student->DisciplineID,
+            'GroupID' => $student -> GroupID,
             'Hours' => $student->Hours
         ];
     }, $loads);
@@ -53,5 +26,72 @@ if($method === 'GET' &&($_GET['action']??'')==='get'){
     http_response_code(500);
     echo json_encode(['error' => 'Failed to fetch students', 'details' => $e->getMessage()]);
 }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action'])) {
+    $input = json_decode(file_get_contents("php://input"), true);
+    if($_GET['action'] === 'add'){
+        try {
+        $newGroup = new loadContext(['ID'=>null,'DisciplineID'=> $input['teacherId'],
+    'TeacherID'=>$input['disciplineId'],'GroupID' =>$input['groupId'],'Hours'=>$input['hours']]);
+        $newGroup->add();
+        $resp = [
+            "success" => true,
+            "message" => "Группа успешно добавлена",
+            "data" => $newGroup->Password
+        ];
+        echo json_encode($resp);
+    } catch (Exception $e) {
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'error' => 'Ошибка при добавлении группы',
+            'details' => $e->getMessage()
+        ]);
+    }
+    exit();
+    }
+    if($_GET['action'] === 'update'){
+        try {
+        $newGroup = new loadContext(['ID'=>$input['id'],'DisciplineID'=> $input['teacherId'],
+    'TeacherID'=>$input['disciplineId'],'GroupID' =>$input['groupId'],'Hours'=>$input['hours']]);
+        $newGroup->update();
+        $resp = [
+            "success" => true,
+            "message" => "Группа успешно добавлена",
+            "data" => $newGroup->ID
+        ];
+        echo json_encode($resp);
+    } catch (Exception $e) {
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'error' => 'Ошибка при добавлении группы',
+            'details' => $e->getMessage()
+        ]);
+    }
+    exit();
+    }
+    if($_GET['action'] ==='del'){
+        try {
+            $id = $input['id'];
+            $res = loadContext::delete($id);
+        $resp = [
+            "success" => true,
+            "message" => "Группа успешно добавлена",
+            "data" => $id,
+            "res" => $res
+        ];
+        echo json_encode($resp);
+    } catch (Exception $e) {
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'error' => 'Ошибка при добавлении группы',
+            'details' => $e->getMessage()
+        ]);
+    }
+    exit();
+    }
 }
 ?>

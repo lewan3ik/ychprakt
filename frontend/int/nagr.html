@@ -406,6 +406,18 @@
             justify-content: center;
             align-items: center;
         }
+        .modal2 {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
 
         .modal-content {
             background-color: white;
@@ -441,6 +453,12 @@
             justify-content: flex-end;
             gap: 10px;
         }
+        .btn-outline a {
+            color: #333;
+        }
+        .btn-outline:hover {
+            background-color: #0060ac;
+        }
 
         .close-modal {
             background: none;
@@ -448,6 +466,9 @@
             font-size: 1.5rem;
             cursor: pointer;
             color: var(--gray-color);
+        }
+        .del:hover{
+            background-color: #c01210;
         }
 
         /* Адаптивность */
@@ -513,40 +534,40 @@
                 <h2><i class="fas fa-graduation-cap"></i> УИС</h2>
             </div>
             <div class="sidebar-menu">
-        <div class="menu-category">Основное</div>
-        <a href="index.html" class="menu-item">
-            <i class="fas fa-home"></i> Главная
-        </a>
-        <a href="students.html" class="menu-item">
-            <i class="fas fa-users"></i> Студенты
-        </a>
-        <a href="groups.html" class="menu-item">
-            <i class="fas fa-layer-group"></i> Группы
-        </a>
-        <a href="dis.html" class="menu-item">
-            <i class="fas fa-book"></i> Дисциплины
-        </a>
-        <a href="teach.html" class="menu-item">
-            <i class="fas fa-chalkboard-teacher"></i> Преподаватели
-        </a>
-        
-        <div class="menu-category">Учебный процесс</div>
-        <a href="programdisteach.html" class="menu-item">
-            <i class="fas fa-tasks"></i> Программы дисциплин
-        </a>
-        <a href="nagr.html" class="menu-item active">
-            <i class="fas fa-chart-bar"></i> Нагрузка
-        </a>
-        <a href="kons.html" class="menu-item">
-            <i class="fas fa-question-circle"></i> Консультации
-        </a>
-        <a href="skip.html" class="menu-item">
-            <i class="fas fa-user-times"></i> Пропуски
-        </a>
-        <a href="marks.html" class="menu-item">
-            <i class="fas fa-star"></i> Оценки
-        </a>
-    </div>
+                <div class="menu-category">Основное</div>
+                <a href="index.html" class="menu-item">
+                    <i class="fas fa-home"></i> Главная
+                </a>
+                <a href="students.html" class="menu-item">
+                    <i class="fas fa-users"></i> Студенты
+                </a>
+                <a href="groups.html" class="menu-item">
+                    <i class="fas fa-layer-group"></i> Группы
+                </a>
+                <a href="dis.html" class="menu-item">
+                    <i class="fas fa-book"></i> Дисциплины
+                </a>
+                <a href="teach.html" class="menu-item">
+                    <i class="fas fa-chalkboard-teacher"></i> Преподаватели
+                </a>
+                
+                <div class="menu-category">Учебный процесс</div>
+                <a href="programdisteach.html" class="menu-item">
+                    <i class="fas fa-tasks"></i> Программы дисциплин
+                </a>
+                <a href="nagr.html" class="menu-item active">
+                    <i class="fas fa-chart-bar"></i> Нагрузка
+                </a>
+                <a href="kons.html" class="menu-item">
+                    <i class="fas fa-question-circle"></i> Консультации
+                </a>
+                <a href="skip.html" class="menu-item">
+                    <i class="fas fa-user-times"></i> Пропуски
+                </a>
+                <a href="marks.html" class="menu-item">
+                    <i class="fas fa-star"></i> Оценки
+                </a>
+            </div>
         </div>
 
         <!-- Основное содержимое -->
@@ -597,7 +618,7 @@
                         </tr>
                     </thead>
                     <tbody id="loads">
-                        <tr>
+                        <tr class="elemsList">
                             <td>1</td>
                             <td>Иванов П.С.</td>
                             <td>МДК.01.01</td>
@@ -607,12 +628,12 @@
                                 <button class="btn btn-outline">
                                     <i class="fas fa-edit"></i>
                                 </button>
-                                <button class="btn btn-outline">
+                                <button class="btn btn-outline del">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </td>
                         </tr>
-                        <tr>
+                        <tr class="elemsList">
                             <td>2</td>
                             <td>Петров А.В.</td>
                             <td>МДК.01.03</td>
@@ -622,7 +643,7 @@
                                 <button class="btn btn-outline">
                                     <i class="fas fa-edit"></i>
                                 </button>
-                                <button class="btn btn-outline">
+                                <button class="btn btn-outline del">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </td>
@@ -652,103 +673,414 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label>Преподаватель *</label>
-                            <select class="form-control" required>
-                                <option>Иванов П.С.</option>
-                                <option>Петров А.В.</option>
+                            <select class="form-control" required id="loadTeacher">
+                                <!-- Заполнится динамически -->
                             </select>
                         </div>
                         <div class="form-group">
                             <label>Дисциплина *</label>
-                            <select class="form-control" required>
-                                <option>МДК.01.01</option>
-                                <option>МДК.01.03</option>
+                            <select class="form-control" required id="loadDiscipline">
+                                <!-- Заполнится динамически -->
                             </select>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
                             <label>Группа *</label>
-                            <select class="form-control" required>
-                                <option>ИСП-31.2</option>
-                                <option>ИСП-31.4</option>
+                            <select class="form-control" required id="loadGroup">
+                                <!-- Заполнится динамически -->
                             </select>
                         </div>
                         <div class="form-group">
                             <label>Часы *</label>
-                            <input type="number" class="form-control" required>
+                            <input type="number" class="form-control" required id="loadHours">
                         </div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-outline">Отмена</button>
-                <button class="btn btn-primary">Сохранить</button>
+                <button class="btn btn-primary" id="saveLoadBtn">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно редактирования нагрузки -->
+    <div class="modal2" id="editLoadModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Редактировать нагрузку</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <input type="hidden" id="editLoadId">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Преподаватель *</label>
+                            <select class="form-control" required id="editLoadTeacher">
+                                <!-- Заполнится динамически -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Дисциплина *</label>
+                            <select class="form-control" required id="editLoadDiscipline">
+                                <!-- Заполнится динамически -->
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Группа *</label>
+                            <select class="form-control" required id="editLoadGroup">
+                                <!-- Заполнится динамически -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Часы *</label>
+                            <input type="number" class="form-control" required id="editLoadHours">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline">Отмена</button>
+                <button class="btn btn-primary" id="updateLoadBtn">Сохранить</button>
             </div>
         </div>
     </div>
 
     <script>
         const dir = '../../controllers/';
+        let teachersList = [];
+        let disciplinesList = [];
+        let groupsList = [];
+        let loadsList = [];
 
-        function fetchLoad() {
-    fetch(dir + 'LoadController.php?action=get')
-        .then(res => {
-            if (!res.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return res.json();
-        })
-        .then(list => {
-            const tbody = document.getElementById('loads');
-            console.log(list);
-            tbody.innerHTML = ''; // Очистка содержимого tbody
+        // Загрузка списка преподавателей
+        function fetchTeachers() {
+            fetch(dir + 'TeachersController.php?action=get')
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return res.json();
+                })
+                .then(list => {
+                    teachersList = list;
+                    // Заполняем select в модальных окнах
+                    const teacherSelects = [
+                        document.getElementById('loadTeacher'),
+                        document.getElementById('editLoadTeacher')
+                    ];
+                    
+                    teacherSelects.forEach(select => {
+                        select.innerHTML = '';
+                        list.forEach(teacher => {
+                            const option = document.createElement('option');
+                            option.value = teacher.ID;
+                            option.textContent = teacher.FullName;
+                            select.appendChild(option);
+                        });
+                    });
+                })
+                .catch(err => console.error('Failed to fetch teachers:', err));
+        }
 
-            list.forEach(elem => {
-                const row = `
-               <tr>
-                            <td>${elem.ID}</td>
-                            <td>${elem.TeacherID}</td>
-                            <td>${elem.DisciplineID}</td>
-                            <td>${elem.GroupID}</td>
-                            <td>${elem.Hours}</td>
-                            <td>
-                                <button class="btn btn-outline">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="btn btn-outline">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </td>
-                        </tr>`;
-                tbody.insertAdjacentHTML('beforeend', row);
+        // Загрузка списка дисциплин
+        function fetchDisciplines() {
+            fetch(dir + 'DisciplineController.php?action=get')
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return res.json();
+                })
+                .then(list => {
+                    disciplinesList = list;
+                    // Заполняем select в модальных окнах
+                    const disciplineSelects = [
+                        document.getElementById('loadDiscipline'),
+                        document.getElementById('editLoadDiscipline')
+                    ];
+                    
+                    disciplineSelects.forEach(select => {
+                        select.innerHTML = '';
+                        list.forEach(discipline => {
+                            const option = document.createElement('option');
+                            option.value = discipline.ID;
+                            option.textContent = discipline.Name;
+                            select.appendChild(option);
+                        });
+                    });
+                })
+                .catch(err => console.error('Failed to fetch disciplines:', err));
+        }
+
+        // Загрузка списка групп
+        function fetchGroups() {
+            fetch(dir + 'GroupController.php?action=get')
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return res.json();
+                })
+                .then(list => {
+                    groupsList = list;
+                    // Заполняем select в модальных окнах
+                    const groupSelects = [
+                        document.getElementById('loadGroup'),
+                        document.getElementById('editLoadGroup')
+                    ];
+                    
+                    groupSelects.forEach(select => {
+                        select.innerHTML = '';
+                        list.forEach(group => {
+                            const option = document.createElement('option');
+                            option.value = group.ID;
+                            option.textContent = group.Name;
+                            select.appendChild(option);
+                        });
+                    });
+                })
+                .catch(err => console.error('Failed to fetch groups:', err));
+        }
+
+        // Загрузка списка нагрузок
+        function fetchLoads() {
+            fetch(dir + 'LoadController.php?action=get')
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return res.json();
+                })
+                .then(list => {
+                    loadsList = list;
+                    const tbody = document.getElementById('loads');
+                    tbody.innerHTML = '';
+
+                    list.forEach(load => {
+                        // Находим преподавателя, дисциплину и группу по ID
+                        const teacher = teachersList.find(t => t.ID == load.TeacherID) || { FullName: 'Неизвестно' };
+                        const discipline = disciplinesList.find(d => d.ID == load.DisciplineID) || { Name: 'Неизвестно' };
+                        const group = groupsList.find(g => g.ID == load.GroupID) || { Name: 'Неизвестно' };
+                        
+                        const row = `
+                            <tr class="elemsList">
+                                <td>${load.ID}</td>
+                                <td>${teacher.FullName}</td>
+                                <td>${discipline.Name}</td>
+                                <td>${group.Name}</td>
+                                <td>${load.Hours}</td>
+                                <td>
+                                    <button class="btn btn-outline">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-outline del">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>`;
+                        tbody.insertAdjacentHTML('beforeend', row);
+                    });
+
+                    // Добавляем обработчики событий для кнопок редактирования и удаления
+                    document.querySelectorAll(".elemsList").forEach((elem) => {
+                        elem.addEventListener("click", (e) => {
+                            if (e.target.classList[0] == "btn" && !e.target.classList.contains('del')) {
+                                // Редактирование нагрузки
+                                const loadId = e.currentTarget.children[0].textContent;
+                                const load = loadsList.find(l => l.ID == loadId);
+                                
+                                if (load) {
+                                    document.querySelector('.modal2').style.display = 'flex';
+                                    document.querySelector('#editLoadId').value = load.ID;
+                                    document.querySelector('#editLoadHours').value = load.Hours;
+                                    
+                                    // Устанавливаем выбранного преподавателя
+                                    const teacherSelect = document.getElementById('editLoadTeacher');
+                                    for (let i = 0; i < teacherSelect.options.length; i++) {
+                                        if (teacherSelect.options[i].value == load.TeacherID) {
+                                            teacherSelect.selectedIndex = i;
+                                            break;
+                                        }
+                                    }
+                                    
+                                    // Устанавливаем выбранную дисциплину
+                                    const disciplineSelect = document.getElementById('editLoadDiscipline');
+                                    for (let i = 0; i < disciplineSelect.options.length; i++) {
+                                        if (disciplineSelect.options[i].value == load.DisciplineID) {
+                                            disciplineSelect.selectedIndex = i;
+                                            break;
+                                        }
+                                    }
+                                    
+                                    // Устанавливаем выбранную группу
+                                    const groupSelect = document.getElementById('editLoadGroup');
+                                    for (let i = 0; i < groupSelect.options.length; i++) {
+                                        if (groupSelect.options[i].value == load.GroupID) {
+                                            groupSelect.selectedIndex = i;
+                                            break;
+                                        }
+                                    }
+                                }
+                            } else if(e.target.classList.contains('del')) {
+                                // Удаление нагрузки
+                                const loadId = e.currentTarget.children[0].textContent;
+                                if(confirm('Вы уверены, что хотите удалить эту нагрузку?')) {
+                                    deleteLoad(loadId);
+                                }
+                            }
+                        });
+                    });
+                })
+                .catch(err => console.error('Failed to fetch loads:', err));
+        }
+
+        // Добавление новой нагрузки
+        function addLoad(teacherId, disciplineId, groupId, hours) {
+            fetch(dir + 'LoadController.php?action=add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    teacherId: teacherId,
+                    disciplineId: disciplineId,
+                    groupId: groupId,
+                    hours: hours
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Ошибка при добавлении нагрузки: ' + (data.message || 'Неизвестная ошибка'));
+                }
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+                alert('Произошла ошибка при добавлении нагрузки');
             });
-        })
-        .catch(err => console.error('Failed to fetch students:', err));
-}
-fetchLoad();
+        }
+
+        // Обновление нагрузки
+        function updateLoad(id, teacherId, disciplineId, groupId, hours) {
+            fetch(dir + 'LoadController.php?action=update', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id: id,
+                    teacherId: teacherId,
+                    disciplineId: disciplineId,
+                    groupId: groupId,
+                    hours: hours
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Ошибка при обновлении нагрузки: ' + (data.message || 'Неизвестная ошибка'));
+                }
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+                alert('Произошла ошибка при обновлении нагрузки');
+            });
+        }
+
+        // Удаление нагрузки
+        function deleteLoad(id) {
+            fetch(dir + 'LoadController.php?action=del', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id: id
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response;
+            })
+            .then(data => {
+                location.reload();
+                if (data.success) {
+                    location.reload();
+                } else {
+                    location.reload();
+                    alert('Ошибка при удалении нагрузки: ' + (data.message || 'Неизвестная ошибка'));
+                }
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+                alert('Произошла ошибка при удалении нагрузки');
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
-            // Пример обработчика для меню
-            const menuItems = document.querySelectorAll('.menu-item');
-            menuItems.forEach(item => {
-                item.addEventListener('click', function() {
-                    menuItems.forEach(i => i.classList.remove('active'));
-                    this.classList.add('active');
-                });
+            // Загружаем данные при загрузке страницы
+            fetchTeachers();
+            fetchDisciplines();
+            fetchGroups();
+            fetchLoads();
+
+            // Обработчик для кнопки добавления нагрузки
+            document.getElementById('addLoadBtn').addEventListener('click', function() {
+                document.getElementById('addLoadModal').style.display = 'flex';
             });
 
-            // Пример обработчика для модального окна
+            // Обработчик для сохранения новой нагрузки
+            document.getElementById('saveLoadBtn').addEventListener('click', function() {
+                const teacherId = document.getElementById('loadTeacher').value;
+                const disciplineId = document.getElementById('loadDiscipline').value;
+                const groupId = document.getElementById('loadGroup').value;
+                const hours = document.getElementById('loadHours').value;
+                
+                if (teacherId && disciplineId && groupId && hours) {
+                    addLoad(teacherId, disciplineId, groupId, hours);
+                } else {
+                    alert('Пожалуйста, заполните все обязательные поля');
+                }
+            });
+
+            // Обработчик для обновления нагрузки
+            document.getElementById('updateLoadBtn').addEventListener('click', function() {
+                const id = document.getElementById('editLoadId').value;
+                const teacherId = document.getElementById('editLoadTeacher').value;
+                const disciplineId = document.getElementById('editLoadDiscipline').value;
+                const groupId = document.getElementById('editLoadGroup').value;
+                const hours = document.getElementById('editLoadHours').value;
+                
+                if (id && teacherId && disciplineId && groupId && hours) {
+                    updateLoad(id, teacherId, disciplineId, groupId, hours);
+                } else {
+                    alert('Пожалуйста, заполните все обязательные поля');
+                }
+            });
+
+            // Закрытие модальных окон
             const closeModalButtons = document.querySelectorAll('.close-modal, .btn-outline');
             closeModalButtons.forEach(button => {
                 button.addEventListener('click', function() {
-                    document.querySelectorAll('.modal').forEach(modal => {
+                    document.querySelectorAll('.modal, .modal2').forEach(modal => {
                         modal.style.display = 'none';
                     });
                 });
-            });
-
-            // Пример: открытие модального окна при клике на "Добавить нагрузку"
-            document.getElementById('addLoadBtn').addEventListener('click', function() {
-                document.getElementById('addLoadModal').style.display = 'flex';
             });
         });
     </script>
