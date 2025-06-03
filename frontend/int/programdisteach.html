@@ -17,6 +17,35 @@
             --orange-grade: #FF9800;
             --red-grade: #F44336;
         }
+        .filters {
+    display: flex;
+    gap: 10px;
+}
+
+.filters select {
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid var(--gray-color);
+    background-color: white;
+    min-width: 150px;
+}
+
+@media (max-width: 768px) {
+    .section-actions {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .filters {
+        width: 100%;
+        margin: 10px 0;
+    }
+    
+    .filters select {
+        width: 100%;
+    }
+}
+
 
         * {
             margin: 0;
@@ -596,17 +625,28 @@
             <!-- Программы дисциплин -->
             <div class="content-section">
                 <div class="section-header">
-                    <h3 class="section-title">Программы дисциплин</h3>
-                    <div class="section-actions">
-                        <div class="search-box">
-                            <i class="fas fa-search"></i>
-                            <input type="text" placeholder="Поиск...">
-                        </div>
-                        <button class="btn btn-primary" id="addProgramBtn">
-                            <i class="fas fa-plus"></i> Добавить программу
-                        </button>
-                    </div>
-                </div>
+    <h3 class="section-title">Программы дисциплин</h3>
+    <div class="section-actions">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Поиск по теме..." id="searchInput">
+        </div>
+        <div class="filters">
+            <select class="form-control" id="disciplineFilter">
+                <option value="">Все дисциплины</option>
+            </select>
+            <select class="form-control" id="typeFilter">
+                <option value="">Все типы</option>
+                <option value="lecture">Лекция</option>
+                <option value="practice">Практика</option>
+            </select>
+        </div>
+        <button class="btn btn-primary" id="addProgramBtn">
+            <i class="fas fa-plus"></i> Добавить программу
+        </button>
+    </div>
+</div>
+
                 <table>
                     <thead>
                         <tr>
@@ -785,78 +825,75 @@
         }
 
         // Загрузка списка программ
-        function fetchPrograms() {
-            fetch(dir + 'programDisciplineController.php?action=get')
-                .then(res => {
-                    if (!res.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return res.json();
-                })
-                .then(list => {
-                    programsList = list;
-                    const tbody = document.getElementById('programs');
-                    tbody.innerHTML = '';
+        // Добавьте эту функцию для инициализации фильтров
+function initFilters() {
+    // Заполняем фильтр дисциплин
+    const disciplineFilter = document.getElementById('disciplineFilter');
+    disciplinesList.forEach(discipline => {
+        const option = document.createElement('option');
+        option.value = discipline.ID;
+        option.textContent = discipline.Name;
+        disciplineFilter.appendChild(option);
+    });
 
+    // Обработчики событий для фильтров
+    document.getElementById('disciplineFilter').addEventListener('change', applyFilters);
+    document.getElementById('typeFilter').addEventListener('change', applyFilters);
+    document.getElementById('searchInput').addEventListener('input', applyFilters);
+}
 
-                    list.forEach(program => {
-                        // Находим название дисциплины по ID
-                        
-                        const row = `
-                            <tr class="elemsList">
-                                <td>${program.ID}</td>
-                                <td>${program.Topic}</td>
-                                <td>${getClassTypeName(program.ClassType)}</td>
-                                <td>${program.Hours}</td>
-                                <td>${program.DisciplineID}</td>
-                                <td>
-                                    <button class="btn btn-outline">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="btn btn-outline del">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>`;
-                        tbody.insertAdjacentHTML('beforeend', row);
-                    });
+// Функция применения фильтров
+function applyFilters() {
+    const disciplineValue = document.getElementById('disciplineFilter').value;
+    const typeValue = document.getElementById('typeFilter').value;
+    const searchValue = document.getElementById('searchInput').value.toLowerCase();
 
-                    // Добавляем обработчики событий для кнопок редактирования и удаления
-                    document.querySelectorAll(".elemsList").forEach((elem) => {
-                        elem.addEventListener("click", (e) => {
-                            if (e.target.classList[0] == "btn" && !e.target.classList.contains('del')) {
-                                // Редактирование программы
-                                const programId = e.currentTarget.children[0].textContent;
-                                const program = programsList.find(p => p.ID == programId);
-                                
-                                if (program) {
-                                    document.querySelector('.modal2').style.display = 'flex';
-                                    document.querySelector('#editProgramId').value = program.ID;
-                                    document.querySelector('#editProgramTopic').value = program.Topic;
-                                    document.querySelector('#editProgramClassType').value = program.ClassType;
-                                    document.querySelector('#editProgramHours').value = program.Hours;
-                                    
-                                    // Устанавливаем выбранную дисциплину
-                                    const disciplineSelect = document.getElementById('editProgramDiscipline');
-                                    for (let i = 0; i < disciplineSelect.options.length; i++) {
-                                        if (disciplineSelect.options[i].value == program.DisciplineID) {
-                                            disciplineSelect.selectedIndex = i;
-                                            break;
-                                        }
-                                    }
-                                }
-                            } else if(e.target.classList.contains('del')) {
-                                // Удаление программы
-                                const programId = e.currentTarget.children[0].textContent;
-                                if(confirm('Вы уверены, что хотите удалить эту программу?')) {
-                                    deleteProgram(programId);
-                                }
-                            }
-                        });
-                    });
-                })
-                .catch(err => console.error('Failed to fetch programs:', err));
-        }
+    document.querySelectorAll('#programs tr.elemsList').forEach(row => {
+        const disciplineMatch = !disciplineValue || row.cells[4].textContent == disciplineValue;
+        const typeMatch = !typeValue || row.cells[2].textContent.toLowerCase() == getClassTypeName(typeValue).toLowerCase();
+        const searchMatch = !searchValue || row.cells[1].textContent.toLowerCase().includes(searchValue);
+
+        row.style.display = (disciplineMatch && typeMatch && searchMatch) ? '' : 'none';
+    });
+}
+
+// Обновите функцию fetchPrograms, добавив вызов initFilters после загрузки данных
+function fetchPrograms() {
+    fetch(dir + 'programDisciplineController.php?action=get')
+        .then(res => res.json())
+        .then(list => {
+            programsList = list;
+            const tbody = document.getElementById('programs');
+            tbody.innerHTML = '';
+
+            list.forEach(program => {
+                const row = `
+                    <tr class="elemsList" data-discipline="${program.DisciplineID}" data-type="${program.ClassType}">
+                        <td>${program.ID}</td>
+                        <td>${program.Topic}</td>
+                        <td>${getClassTypeName(program.ClassType)}</td>
+                        <td>${program.Hours}</td>
+                        <td>${program.DisciplineID}</td>
+                        <td>
+                            <button class="btn btn-outline">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-outline del">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>`;
+                tbody.insertAdjacentHTML('beforeend', row);
+            });
+
+            // Инициализируем фильтры после загрузки данных
+            initFilters();
+            
+            // Остальной код обработчиков...
+        })
+        .catch(err => console.error('Failed to fetch programs:', err));
+}
+
 
         // Получение читаемого названия типа занятия
         function getClassTypeName(type) {
@@ -962,7 +999,6 @@
             // Загружаем данные при загрузке страницы
             fetchDisciplines();
             fetchPrograms();
-
             // Обработчик для кнопки добавления программы
             document.getElementById('addProgramBtn').addEventListener('click', function() {
                 document.getElementById('addProgramModal').style.display = 'flex';
