@@ -9,7 +9,8 @@ class markContext extends mark {
             $data['ID'],
             $data['StudentID'],
             $data['LessonID'],
-            $data['Grade']
+            $data['Grade'],
+            $data['Date']
         );
     }
 

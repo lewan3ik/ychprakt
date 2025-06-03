@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Журнал оценок</title>
+    <style>
+        :root {
+            --gray-color: #9EA1A2;
+            --red-color: #E41613;
+            --blue-color: #0060AC;
+            --light-gray: #f5f5f5;
+            --white: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light-gray);
+            color: #333;
+            padding: 20px;
+        }
+
+        .journal-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            overflow-x: auto;
+        }
+
+        .journal-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--light-gray);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .journal-title {
+            font-size: 1.3rem;
+            color: var(--blue-color);
+            font-weight: 600;
+        }
+
+        .journal-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .btn i {
+            margin-right: 5px;
+        }
+
+        .btn-primary {
+            background-color: var(--blue-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #004080;
+        }
+
+        .search-box {
+            position: relative;
+            width: 250px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 8px 15px 8px 35px;
+            border-radius: 4px;
+            border: 1px solid var(--gray-color);
+            outline: none;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1200px;
+        }
+
+        th, td {
+            padding: 10px 8px;
+            text-align: center;
+            border: 1px solid #ddd;
+            font-size: 14px;
+        }
+
+        th {
+            background-color: var(--light-gray);
+            font-weight: 600;
+            color: #555;
+            position: sticky;
+            top: 0;
+        }
+
+        .student-name {
+            text-align: left;
+            min-width: 150px;
+        }
+
+        .date-header {
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            height: 150px;
+            vertical-align: bottom;
+            padding: 5px 3px;
+            white-space: nowrap;
+        }
+
+        .day-type {
+            font-weight: normal;
+            font-size: 12px;
+            color: #666;
+            display: block;
+            margin-top: 5px;
+        }
+
+        .grade-cell {
+            min-width: 30px;
+        }
+
+        .grade-5 {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        .grade-4 {
+            color: #FFC107;
+            font-weight: bold;
+        }
+
+        .grade-3 {
+            color: #FF9800;
+            font-weight: bold;
+        }
+
+        .grade-2 {
+            color: #F44336;
+            font-weight: bold;
+        }
+
+        .present {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        .absent {
+            color: #F44336;
+            font-weight: bold;
+        }
+
+        .month-grade {
+            background-color: rgba(0, 96, 172, 0.1);
+            font-weight: bold;
+        }
+
+        .harv-ball {
+            font-weight: bold;
+        }
+
+        .row-number {
+            font-weight: bold;
+            color: #555;
+        }
+
+        .scroll-container {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .journal-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .search-box {
+                width: 100%;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="journal-container">
+        <div class="journal-header">
+            <h2 class="journal-title">Журнал оценок группы ИСП-31.2</h2>
+            <div class="journal-actions">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Поиск студента...">
+                </div>
+                <button class="btn btn-primary">
+                    <i class="fas fa-download"></i> Экспорт
+                </button>
+            </div>
+        </div>
+        
+        <div class="scroll-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th rowspan="2">№</th>
+                        <th rowspan="2" class="student-name">Студент</th>
+                        <th rowspan="2">Харв. балл</th>
+                        <th class="date-header">04.09<div class="day-type">Тест</div></th>
+                        <th class="date-header">05.09</th>
+                        <th class="date-header">06.09</th>
+                        <th class="date-header">07.09<div class="day-type">Прак</div></th>
+                        <th class="date-header">08.09<div class="day-type">Доклад</div></th>
+                        <th class="date-header">12.09<div class="day-type">Прак</div></th>
+                        <th class="date-header">13.09<div class="day-type">Тест</div></th>
+                        <th class="date-header">14.09<div class="day-type">Прак</div></th>
+                        <th class="date-header">15.09</th>
+                        <th class="date-header">16.09</th>
+                        <th class="date-header">19.09</th>
+                        <th class="date-header">21.09<div class="day-type">За мес</div></th>
+                        <th class="date-header">22.09</th>
+                        <th class="date-header">25.09</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="row-number">1</td>
+                        <td class="student-name"></td>
+                        <td class="harv-ball">-</td>
+                        <td class="grade-cell grade-2">0</td>
+                        <td class="grade-cell present">+</td>
+                        <td class="grade-cell grade-2">2</td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell grade-5">5</td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell month-grade grade-2">2</td>
+                        <td class="grade-cell grade-2">2</td>
+                        <td class="grade-cell"></td>
+                    </tr>
+                    <tr>
+                        <td class="row-number">2</td>
+                        <td class="student-name"></td>
+                        <td class="harv-ball">-</td>
+                        <td class="grade-cell grade-2">0</td>
+                        <td class="grade-cell present">+</td>
+                        <td class="grade-cell grade-3">3</td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell grade-5">5</td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell grade-5">5</td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell grade-4">4</td>
+                        <td class="grade-cell grade-3">3</td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell month-grade grade-5">5</td>
+                    </tr>
+                    <tr>
+                        <td class="row-number">3</td>
+                        <td class="student-name"></td>
+                        <td class="harv-ball">-</td>
+                        <td class="grade-cell grade-3">1</td>
+                        <td class="grade-cell present">+</td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell grade-5">5</td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell grade-5">5</td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell grade-4">4</td>
+                        <td class="grade-cell grade-5">5</td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell month-grade grade-5">5</td>
+                    </tr>
+                    <tr>
+                        <td class="row-number">4</td>
+                        <td class="student-name"></td>
+                        <td class="harv-ball">-</td>
+                        <td class="grade-cell grade-2">0</td>
+                        <td class="grade-cell present">+</td>
+                        <td class="grade-cell grade-4">4</td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell grade-5">5</td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell grade-5">5</td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell grade-5">5</td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell month-grade grade-5">5</td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell"></td>
+                    </tr>
+                    <tr>
+                        <td class="row-number">5</td>
+                        <td class="student-name"></td>
+                        <td class="harv-ball">-</td>
+                        <td class="grade-cell grade-2">0</td>
+                        <td class="grade-cell present">+</td>
+                        <td class="grade-cell grade-3">3</td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell grade-5">5</td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell grade-5">5</td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell grade-5">5</td>
+                        <td class="grade-cell grade-3">3</td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell month-grade grade-5">5</td>
+                    </tr>
+                    <tr>
+                        <td class="row-number">6</td>
+                        <td class="student-name"></td>
+                        <td class="harv-ball">-</td>
+                        <td class="grade-cell grade-2">0</td>
+                        <td class="grade-cell present">+</td>
+                        <td class="grade-cell grade-4">4</td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell grade-5">5</td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell grade-5">5</td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell grade-4">4</td>
+                        <td class="grade-cell grade-3">3</td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell month-grade grade-5">5</td>
+                    </tr>
+                    <tr>
+                        <td class="row-number">7</td>
+                        <td class="student-name"></td>
+                        <td class="harv-ball">-</td>
+                        <td class="grade-cell grade-3">3</td>
+                        <td class="grade-cell present">+</td>
+                        <td class="grade-cell grade-5">5</td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell grade-5">5</td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell grade-5">5</td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell grade-5">5</td>
+                        <td class="grade-cell grade-5">5</td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell month-grade grade-5">5</td>
+                    </tr>
+                    <tr>
+                        <td class="row-number">8</td>
+                        <td class="student-name"></td>
+                        <td class="harv-ball">-</td>
+                        <td class="grade-cell grade-2">0</td>
+                        <td class="grade-cell present">+</td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell grade-5">5</td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell grade-5">5</td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell grade-5">5</td>
+                        <td class="grade-cell grade-4">4</td>
+                        <td class="grade-cell grade-5">5</td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell month-grade grade-5">5</td>
+                    </tr>
+                    <tr>
+                        <td class="row-number">9</td>
+                        <td class="student-name"></td>
+                        <td class="harv-ball">-</td>
+                        <td class="grade-cell grade-2">0</td>
+                        <td class="grade-cell present">+</td>
+                        <td class="grade-cell grade-3">3</td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell grade-5">5</td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell grade-5">5</td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell grade-5">5</td>
+                        <td class="grade-cell grade-3">3</td>
+                        <td class="grade-cell month-grade grade-4">4</td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell"></td>
+                    </tr>
+                    <tr>
+                        <td class="row-number">10</td>
+                        <td class="student-name"></td>
+                        <td class="harv-ball">-</td>
+                        <td class="grade-cell grade-2">0</td>
+                        <td class="grade-cell present">+</td>
+                        <td class="grade-cell grade-5">5</td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell grade-5">5</td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell grade-5">5</td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell grade-5">5</td>
+                        <td class="grade-cell grade-5">5</td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell"></td>
+                        <td class="grade-cell month-grade grade-5">5</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Здесь можно добавить JavaScript для функциональности
+        document.addEventListener('DOMContentLoaded', function() {
+            // Пример: выделение ячейки при клике
+            const gradeCells = document.querySelectorAll('.grade-cell');
+            gradeCells.forEach(cell => {
+                cell.addEventListener('click', function() {
+                    // Удаляем выделение у всех ячеек
+                    gradeCells.forEach(c => c.style.backgroundColor = '');
+                    
+                    // Выделяем текущую ячейку
+                    this.style.backgroundColor = 'rgba(0, 96, 172, 0.1)';
+                    
+                    // Здесь можно добавить логику для редактирования оценки
+                });
+            });
+        });
+    </script>
+</body>
+</html>

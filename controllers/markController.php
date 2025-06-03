@@ -1,55 +1,57 @@
 <?php
 ini_set('display_errors', 0);
-require_once __DIR__ . '/classes/studentContext.php';
-require_once __DIR__ . '/classes/leassonContext.php';
-require_once __DIR__ . '/classes/markContext.php';
+require_once __DIR__ . '/../classes/studentContext.php';
+require_once __DIR__ . '/../classes/leassonContext.php';
+require_once __DIR__ . '/../classes/markContext.php';
 
 header('Content-Type: application/json');
 $method = $_SERVER['REQUEST_METHOD'];
-if($method === 'GET' &&($_GET['action']??'')==='get'){
-    try {
-        $allles = leassonContext::select();
-$students = studentContext::select();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action'])) {
+    $input = json_decode(file_get_contents("php://input"), true);
+    if($_GET['action'] === 'getMarks'){
+        try {
+            $studId = $input['groupId'];
+
+       $students = studentContext::select();
 $allMarks = markContext::select();
 
-// Подготовка данных для отображения
-$studentArray = array_map(function($elem) {
-    return [
-        'ID' => $elem->ID,
-        'Name' => $elem->FullName
-    ];
-}, $students);
-
-$leassonsArray = array_map(function($elem) {
-    return [
-        'ID' => $elem->ID,
-        'Date' => $elem->date
-    ];
-}, $allles);
-
-$studentsArray = array_map(function($student) use ($studentArray,$leassonsArray) {
-    $lesDate = $leassonsArray[$student->LessonID]['Date'];
-    $studName = $studentArray[$student->StudentID]['Name'];
-
-    return [
-        'ID' => $student->ID,
-        'StudentID' => $studName,
-        'LesssonID' => $lesDate,
-        'Grade' => $student->Grade
-    ];
-}, $allMarks);
-
-        echo json_encode($groupArray, JSON_UNESCAPED_UNICODE);
-    } catch (Exception $e) {
-        error_log("Error: " . $e->getMessage());
-        http_response_code(500);
-        echo json_encode(['error' => 'Failed to fetch students', 'details' => $e->getMessage()]);
-    }
+// Создаем ассоциативный массив студентов для быстрого поиска по ID
+$studentsMap = [];
+foreach ($students as $student) {
+    $studentsMap[$student->ID] = $student;
 }
 
+// Фильтруем оценки только для студентов из группы 1
+$filteredMarks = array_filter($allMarks, function($mark) use ($studentsMap,$studId) {
+    // Проверяем, что студент существует и принадлежит группе 1
+    return isset($studentsMap[$mark->StudentID]) && $studentsMap[$mark->StudentID]->GroupID == $studId;
+});
 
-
-if($method === 'POST' && $_POST['action'] === 'getMarks'){
+// Формируем итоговый массив с нужной структурой
+$result = array_map(function($mark) use ($studentsMap) {
+    $student = $studentsMap[$mark->StudentID];
     
+    return [
+        'ID' => $mark->ID,
+        'StudentID' => $mark->StudentID,
+        'LessonID' => $mark->LessonID,
+        'Grade' => $mark->Grade,
+        'Date' => $mark->Date,
+        'StudentName' => $student->FullName
+    ];
+}, $filteredMarks);
+
+        echo json_encode($result, JSON_UNESCAPED_UNICODE);
+    }catch (Exception $e) {
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'error' => 'Ошибка при добавлении группы',
+            'details' => $e->getMessage()
+        ]);
+    }
+    exit();
+    }
 }
 ?>

@@ -1,49 +1,40 @@
 <?php
-include_once __DIR__ . "/classes/studentContext.php";
+require_once __DIR__ . '/classes/studentContext.php';
+require_once __DIR__ . '/classes/leassonContext.php';
+require_once __DIR__ . '/classes/markContext.php';
 
-// Функция для вывода результатов теста
-function printTestResult($testName, $result) {
-    echo $testName . ": " . ($result ? "ПРОЙДЕН" : "НЕ ПРОЙДЕН") . "\n";
+// Получаем данные из контекстов
+$students = studentContext::select();
+$allMarks = markContext::select();
+
+// Создаем ассоциативный массив студентов для быстрого поиска по ID
+$studentsMap = [];
+foreach ($students as $student) {
+    $studentsMap[$student->ID] = $student;
 }
 
+// Фильтруем оценки только для студентов из группы 1
+$filteredMarks = array_filter($allMarks, function($mark) use ($studentsMap) {
+    // Проверяем, что студент существует и принадлежит группе 1
+    return isset($studentsMap[$mark->StudentID]) && $studentsMap[$mark->StudentID]->GroupID == 1;
+});
 
-// Тестирование обновления студента
-function testUpdateStudent() {
-    $studentId = 1; // Предположим, что студент с ID=1 уже существует
-    $student = studentContext::getById($studentId);
-    if ($student) {
-        $student->FullName = "Обновленное Имя";
-        $student->login = "updated_login";
-        $student->password = "updated_password";
-        $student->ExpulsionDate = "2021-01-01";
-        $student->GroupID = 5;
-        return $student->update();
-    }
-    return false;
-}
+// Формируем итоговый массив с нужной структурой
+$result = array_map(function($mark) use ($studentsMap) {
+    $student = $studentsMap[$mark->StudentID];
+    
+    return [
+        'ID' => $mark->ID,
+        'StudentID' => $mark->StudentID,
+        'LessonID' => $mark->LessonID,
+        'Grade' => $mark->Grade,
+        'Date' => $mark->Date,
+        'StudentName' => $student->FullName
+    ];
+}, $filteredMarks);
 
-// Тестирование удаления студента
-function testDeleteStudent() {
-    $studentId = 1; // Предположим, что студент с ID=1 уже существует
-    $student = new studentContext([
-        'ID' => $studentId,
-        'FullName' => "",
-        'login' => '',
-        'password' => '',
-        'ExpulsionDate' => '',
-        'GroupID' => 0
-    ]);
-    return $student->delete($studentId);
-}
-
-// Тестирование выборки студентов
-function testSelectStudents() {
-    $students = studentContext::select();
-    return !empty($students);
-}
-
-// Запуск тестов
-printTestResult("Тест обновления студента", testUpdateStudent());
-printTestResult("Тест удаления студента", testDeleteStudent());
-printTestResult("Тест выборки студентов", testSelectStudents());
+// Выводим результат
+echo '<pre>';
+print_r($result);
+echo '</pre>';
 ?>

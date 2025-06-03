@@ -6,9 +6,12 @@
     <title>Учебная информационная система</title>
     <link rel="stylesheet" href="../css/index.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script defer src="../js/index.js"></script>
     <style>
         /* Дополнительные стили для новых элементов */
+
+        .box{
+            display: none;
+        }
         .filters-container {
             display: flex;
             gap: 20px;
@@ -136,17 +139,7 @@
                             <option value="4">ИТ-202</option>
                         </select>
                     </div>
-                    
-                    <div class="filter-group">
-                        <label for="discipline-select">Дисциплина</label>
-                        <select id="discipline-select">
-                            <option value="">Выберите дисциплину</option>
-                            <option value="1">Программирование</option>
-                            <option value="2">Базы данных</option>
-                            <option value="3">Математика</option>
-                            <option value="4">Английский язык</option>
-                        </select>
-                    </div>
+
                     
                     <button class="btn-view" id="view-marks-btn">
                         <i class="fas fa-star"></i> Просмотреть оценки
@@ -154,7 +147,7 @@
                 </div>
             </div>
             
-            <div class="scroll-container">
+            <div class="scroll-container box">
             <table>
                 <thead>
                     <tr>
@@ -399,46 +392,127 @@
 
 
 
-        fetch(dir + 'disciplineController.php?action=get')
-        .then(res => {
-            if (!res.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return res.json();
-        })
-        .then(students => {
-             const tbody = document.getElementById('discipline-select');
-            tbody.innerHTML = '<option value="">Выберите дисциплину</option>'; // Очистка содержимого tbody
-            console.log(students);
-            students.forEach(student => {
-                const row = `
-               <option value="${student.ID}">${student.Name}</option>`;
-                tbody.insertAdjacentHTML('beforeend', row);
-            });
-        })
-        .catch(err => console.error('Failed to fetch students:', err));
 
+document.querySelector('#view-marks-btn').addEventListener('click', () => {
+    const groupSelect = document.querySelector('#group-select');
+    const groupId = groupSelect.options[groupSelect.selectedIndex].value;
+    
+    if (!groupId) {
+        alert('Пожалуйста, выберите группу');
+        return;
+    }
 
-        document.querySelector('#view-marks-btn').addEventListener('click',()=>{
-            fetch(dir + 'markController.php?action=get')
-        .then(res => {
-            if (!res.ok) {
-                throw new Error('Network response was not ok');
+    fetch(dir + 'markController.php?action=getMarks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ groupId: groupId })
+    })
+    .then(response => {
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+        return response.json();
+    })
+    .then(data => {
+        // Показываем контейнер с таблицей
+        document.querySelector('.scroll-container.box').style.display = 'block';
+        
+        // Создаем карту студентов и их оценок
+        const studentsMap = {};
+        const allDates = new Set();
+        
+        // Обрабатываем данные с сервера
+        Object.values(data).forEach(mark => {
+            if (!studentsMap[mark.StudentID]) {
+                studentsMap[mark.StudentID] = {
+                    name: mark.StudentName,
+                    marks: {}
+                };
             }
-            return res.json();
-        })
-        .then(students => {
-             const tbody = document.getElementById('discipline-select');
-            tbody.innerHTML = '<option value="">Выберите дисциплину</option>'; // Очистка содержимого tbody
-            console.log(students);
-            students.forEach(student => {
-                const row = `
-               <option value="${student.ID}">${student.Name}</option>`;
-                tbody.insertAdjacentHTML('beforeend', row);
+            
+            // Форматируем дату как "дд.мм"
+            const formattedDate = formatDate(mark.Date);
+            studentsMap[mark.StudentID].marks[formattedDate] = mark.Grade;
+            allDates.add(formattedDate);
+        });
+        
+        // Сортируем даты
+        const sortedDates = Array.from(allDates).sort((a, b) => {
+            const [dayA, monthA] = a.split('.').map(Number);
+            const [dayB, monthB] = b.split('.').map(Number);
+            return monthA - monthB || dayA - dayB;
+        });
+        
+        // Получаем таблицу и очищаем ее
+        const table = document.querySelector('.scroll-container table');
+        const thead = table.querySelector('thead');
+        const tbody = table.querySelector('tbody');
+        
+        // Очищаем заголовки (оставляем первые 3 колонки)
+        while (thead.rows[0].cells.length > 3) {
+            thead.rows[0].deleteCell(-1);
+        }
+        
+        // Добавляем заголовки с датами
+        sortedDates.forEach(date => {
+            const th = document.createElement('th');
+            th.className = 'date-header';
+            th.textContent = date;
+            thead.rows[0].appendChild(th);
+        });
+        
+        // Очищаем тело таблицы
+        tbody.innerHTML = '';
+        
+        // Добавляем строки для каждого студента
+        Object.entries(studentsMap).forEach(([studentId, studentData], index) => {
+            const row = tbody.insertRow();
+            
+            // Номер строки
+            const numberCell = row.insertCell();
+            numberCell.className = 'row-number';
+            numberCell.textContent = index + 1;
+            
+            // Имя студента
+            const nameCell = row.insertCell();
+            nameCell.className = 'student-name';
+            nameCell.textContent = studentData.name;
+            
+            // Средний балл
+            const avgCell = row.insertCell();
+            avgCell.className = 'harv-ball';
+            avgCell.textContent = calculateAverage(studentData.marks);
+            
+            // Оценки по датам
+            sortedDates.forEach(date => {
+                const grade = studentData.marks[date] || '';
+                const gradeCell = row.insertCell();
+                gradeCell.className = 'grade-cell' + (grade ? ` grade-${grade}` : '');
+                gradeCell.textContent = grade;
+                gradeCell.dataset.grade = grade;
             });
-        })
-        .catch(err => console.error('Failed to fetch students:', err));
-        })
+        });
+    })
+    .catch(error => {
+        console.error('Ошибка загрузки оценок:', error);
+        alert('Произошла ошибка при загрузке оценок');
+    });
+});
+
+// Функция для форматирования даты
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    return `${day}.${month}`;
+}
+
+// Функция для расчета среднего балла
+function calculateAverage(marks) {
+    const grades = Object.values(marks).filter(grade => grade !== '');
+    if (grades.length === 0) return '-';
+    
+    const sum = grades.reduce((total, grade) => total + parseInt(grade), 0);
+    return (sum / grades.length).toFixed(1);
+}
             // Обработчики для меню
             const menuItems = document.querySelectorAll('.menu-item');
             menuItems.forEach(item => {
@@ -448,21 +522,6 @@
                 });
             });
             
-            // Обработчик для кнопки "Просмотреть оценки"
-            document.getElementById('view-marks-btn').addEventListener('click', function() {
-                const groupId = document.getElementById('group-select').value;
-                const disciplineId = document.getElementById('discipline-select').value;
-                
-                if (!groupId || !disciplineId) {
-                    alert('Пожалуйста, выберите группу и дисциплину');
-                    return;
-                }
-                
-                // Здесь можно добавить логику для загрузки оценок
-                console.log(`Загружаем оценки для группы ${groupId} по дисциплине ${disciplineId}`);
-                // Например, перенаправление на страницу оценок с параметрами:
-                // window.location.href = `marks.html?group=${groupId}&discipline=${disciplineId}`;
-            });
             
             // Обработчики для модальных окон (если нужно)
             const closeModalButtons = document.querySelectorAll('.close-modal, .btn-outline');
