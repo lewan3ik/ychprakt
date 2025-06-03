@@ -54,6 +54,159 @@
         .btn-view:hover {
             background-color: #3a5bc7;
         }
+        .grade-cell{
+            position: relative;
+            cursor: pointer;
+        }
+        .mark{
+            position: absolute;
+            top: 0;
+            left: 11px;
+        }
+        .box{
+            display: none;
+        }
+        .filters-container {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            align-items: flex-end;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .filter-group label {
+            font-size: 14px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        .filter-group select {
+            padding: 8px 12px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            font-size: 14px;
+            min-width: 200px;
+        }
+        
+        .btn-view {
+            padding: 8px 16px;
+            background-color: #4e73df;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-view:hover {
+            background-color: #3a5bc7;
+        }
+        .grade-cell{
+            position: relative;
+            cursor: pointer;
+        }
+        .mark{
+            position: absolute;
+            top: 0;
+            left: 11px;
+        }
+
+        /* Стили для модального окна оценки */
+        .grade-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .grade-modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 300px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .grade-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .grade-modal-title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .grade-modal-close {
+            cursor: pointer;
+            font-size: 20px;
+        }
+        
+        .grade-options {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .grade-option {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-weight: bold;
+            border: 2px solid #ddd;
+            transition: all 0.2s;
+        }
+        
+        .grade-option:hover {
+            transform: scale(1.1);
+        }
+        
+        .grade-option.selected {
+            border-color: #4e73df;
+            background-color: #f0f4ff;
+        }
+        
+        .grade-modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .btn-primary {
+            background-color: #4e73df;
+            color: white;
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid #ddd;
+        }
     </style>
 </head>
 <body>
@@ -367,6 +520,25 @@
     </div>
         </div>
     </div>
+    <div class="grade-modal" id="gradeModal">
+        <div class="grade-modal-content">
+            <div class="grade-modal-header">
+                <div class="grade-modal-title">Изменение оценки</div>
+                <div class="grade-modal-close">&times;</div>
+            </div>
+            <div class="grade-options">
+                <div class="grade-option" data-grade="5">5</div>
+                <div class="grade-option" data-grade="4">4</div>
+                <div class="grade-option" data-grade="3">3</div>
+                <div class="grade-option" data-grade="2">2</div>
+                <div class="grade-option delete" data-grade="">Удалить</div>
+            </div>
+            <div class="grade-modal-footer">
+                <button class="btn btn-outline" id="cancelGradeBtn">Отмена</button>
+                <button class="btn btn-primary" id="saveGradeBtn">Сохранить</button>
+            </div>
+        </div>
+    </div>
 
     <script>
         const dir = '../../controllers/';
@@ -413,83 +585,102 @@ document.querySelector('#view-marks-btn').addEventListener('click', () => {
     })
     .then(data => {
         // Показываем контейнер с таблицей
-        document.querySelector('.scroll-container.box').style.display = 'block';
+   document.querySelector('.scroll-container.box').style.display = 'block';
+
+// Создаем карту студентов и их оценок (теперь храним и ID оценки)
+const studentsMap = {};
+const allDates = new Set();
+
+// Обрабатываем данные с сервера
+Object.values(data).forEach(mark => {
+    if (!studentsMap[mark.StudentID]) {
+        studentsMap[mark.StudentID] = {
+            name: mark.StudentName,
+            marks: {}
+        };
+    }
+    
+    // Форматируем дату как "дд.мм"
+    const formattedDate = formatDate(mark.Date);
+    studentsMap[mark.StudentID].marks[formattedDate] = {
+        grade: mark.Grade,  // сама оценка
+        id: mark.ID         // ID оценки (должен приходить с сервера)
+    };
+    allDates.add(formattedDate);
+});
+
+// Сортируем даты
+const sortedDates = Array.from(allDates).sort((a, b) => {
+    const [dayA, monthA] = a.split('.').map(Number);
+    const [dayB, monthB] = b.split('.').map(Number);
+    return monthA - monthB || dayA - dayB;
+});
+
+// Получаем таблицу и очищаем её
+const table = document.querySelector('.scroll-container table');
+const thead = table.querySelector('thead');
+const tbody = table.querySelector('tbody');
+
+// Очищаем заголовки (оставляем первые 3 колонки)
+while (thead.rows[0].cells.length > 3) {
+    thead.rows[0].deleteCell(-1);
+}
+
+// Добавляем заголовки с датами
+sortedDates.forEach(date => {
+    const th = document.createElement('th');
+    th.className = 'date-header';
+    th.textContent = date;
+    thead.rows[0].appendChild(th);
+});
+
+// Очищаем тело таблицы
+tbody.innerHTML = '';
+
+// Добавляем строки для каждого студента
+Object.entries(studentsMap).forEach(([studentId, studentData], index) => {
+    const row = tbody.insertRow();
+    
+    // Номер строки
+    const numberCell = row.insertCell();
+    numberCell.className = 'row-number';
+    numberCell.textContent = index + 1;
+    
+    // Имя студента
+    const nameCell = row.insertCell();
+    nameCell.className = 'student-name';
+    nameCell.textContent = studentData.name;
+    
+    // Средний балл
+    const avgCell = row.insertCell();
+    avgCell.className = 'harv-ball';
+    
+    // Вычисляем средний балл (только оценки, без ID)
+    const grades = Object.values(studentData.marks).map(m => m.grade);
+    avgCell.textContent = calculateAverage(grades);
+    
+    // Оценки по датам
+    sortedDates.forEach(date => {
+        const markData = studentData.marks[date] || { grade: '', id: null };
+        const grade = markData.grade;
+        const markId = markData.id;
         
-        // Создаем карту студентов и их оценок
-        const studentsMap = {};
-        const allDates = new Set();
+        const gradeCell = row.insertCell();
+        const span = document.createElement('span');
+        span.classList.add('mark');
+        span.textContent = grade;
         
-        // Обрабатываем данные с сервера
-        Object.values(data).forEach(mark => {
-            if (!studentsMap[mark.StudentID]) {
-                studentsMap[mark.StudentID] = {
-                    name: mark.StudentName,
-                    marks: {}
-                };
-            }
-            
-            // Форматируем дату как "дд.мм"
-            const formattedDate = formatDate(mark.Date);
-            studentsMap[mark.StudentID].marks[formattedDate] = mark.Grade;
-            allDates.add(formattedDate);
-        });
+        gradeCell.className = 'grade-cell' + (grade ? ` grade-${grade}` : '');
+        gradeCell.appendChild(span);
         
-        // Сортируем даты
-        const sortedDates = Array.from(allDates).sort((a, b) => {
-            const [dayA, monthA] = a.split('.').map(Number);
-            const [dayB, monthB] = b.split('.').map(Number);
-            return monthA - monthB || dayA - dayB;
-        });
-        
-        // Получаем таблицу и очищаем ее
-        const table = document.querySelector('.scroll-container table');
-        const thead = table.querySelector('thead');
-        const tbody = table.querySelector('tbody');
-        
-        // Очищаем заголовки (оставляем первые 3 колонки)
-        while (thead.rows[0].cells.length > 3) {
-            thead.rows[0].deleteCell(-1);
+        // Теперь храним ID оценки, а не саму оценку
+        if (markId) {
+            gradeCell.dataset.markId = markId;
         }
-        
-        // Добавляем заголовки с датами
-        sortedDates.forEach(date => {
-            const th = document.createElement('th');
-            th.className = 'date-header';
-            th.textContent = date;
-            thead.rows[0].appendChild(th);
-        });
-        
-        // Очищаем тело таблицы
-        tbody.innerHTML = '';
-        
-        // Добавляем строки для каждого студента
-        Object.entries(studentsMap).forEach(([studentId, studentData], index) => {
-            const row = tbody.insertRow();
-            
-            // Номер строки
-            const numberCell = row.insertCell();
-            numberCell.className = 'row-number';
-            numberCell.textContent = index + 1;
-            
-            // Имя студента
-            const nameCell = row.insertCell();
-            nameCell.className = 'student-name';
-            nameCell.textContent = studentData.name;
-            
-            // Средний балл
-            const avgCell = row.insertCell();
-            avgCell.className = 'harv-ball';
-            avgCell.textContent = calculateAverage(studentData.marks);
-            
-            // Оценки по датам
-            sortedDates.forEach(date => {
-                const grade = studentData.marks[date] || '';
-                const gradeCell = row.insertCell();
-                gradeCell.className = 'grade-cell' + (grade ? ` grade-${grade}` : '');
-                gradeCell.textContent = grade;
-                gradeCell.dataset.grade = grade;
-            });
-        });
+    });
+});
+
+addMarks();
     })
     .catch(error => {
         console.error('Ошибка загрузки оценок:', error);
@@ -533,6 +724,132 @@ function calculateAverage(marks) {
                 });
             });
         });
+
+         function addMarks() {
+            const gradeModal = document.getElementById('gradeModal');
+            const closeModalBtn = gradeModal.querySelector('.grade-modal-close');
+            const cancelGradeBtn = document.getElementById('cancelGradeBtn');
+            const saveGradeBtn = document.getElementById('saveGradeBtn');
+            const gradeOptions = gradeModal.querySelectorAll('.grade-option');
+            
+            let currentCell = null;
+            let selectedGrade = null;
+
+            // Обработчик клика по ячейке с оценкой
+            Array.from(document.querySelector('#studentsTable').children).forEach(elem => {
+                elem.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('grade-cell')) {
+                        currentCell = e.target;
+                        const currentGrade = currentCell.querySelector('.mark')?.textContent || '';
+                        
+                        // Показываем модальное окно
+                        gradeModal.style.display = 'flex';
+                        
+                        // Сбрасываем выделение
+                        gradeOptions.forEach(option => {
+                            option.classList.remove('selected');
+                            if (option.dataset.grade === currentGrade) {
+                                option.classList.add('selected');
+                                selectedGrade = currentGrade;
+                            }
+                        });
+                    }
+                });
+            });
+
+            // Обработчики выбора оценки
+            gradeOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    gradeOptions.forEach(opt => opt.classList.remove('selected'));
+                    option.classList.add('selected');
+                    selectedGrade = option.dataset.grade;
+                });
+            });
+
+            // Закрытие модального окна
+            function closeModal() {
+                gradeModal.style.display = 'none';
+                currentCell = null;
+                selectedGrade = null;
+            }
+
+            closeModalBtn.addEventListener('click', closeModal);
+            cancelGradeBtn.addEventListener('click', closeModal);
+
+            // Сохранение оценки
+            saveGradeBtn.addEventListener('click', () => {
+                if (!currentCell) return;
+                
+                const markSpan = currentCell.querySelector('.mark') || document.createElement('span');
+                markSpan.classList.add('mark');
+                
+                // Если выбрано "Удалить", очищаем оценку
+                if (selectedGrade === '') {
+                    markSpan.textContent = '';
+                    currentCell.className = 'grade-cell';
+                    
+                    // Удаляем все классы, связанные с оценками
+                    currentCell.classList.remove('grade-5', 'grade-4', 'grade-3', 'grade-2', 'present');
+                } else {
+                    markSpan.textContent = selectedGrade;
+                    
+                    // Обновляем классы ячейки
+                    currentCell.className = 'grade-cell';
+                    if (selectedGrade === '+') {
+                        currentCell.classList.add('present');
+                    } else if (!isNaN(selectedGrade)) {
+                        currentCell.classList.add(`grade-${selectedGrade}`);
+                    }
+                }
+                
+                // Добавляем span с оценкой, если его нет
+                if (!currentCell.contains(markSpan)) {
+                    currentCell.appendChild(markSpan);
+                }
+                
+                // AJAX-запрос для сохранения/удаления оценки на сервере
+                if (currentCell.dataset.markId) {
+                    const markId = currentCell.dataset.markId;
+                    const url = selectedGrade === '' ? 
+                        dir + 'markController.php?action=del' : 
+                        dir + 'markController.php?action=update';
+                    
+                    fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            markId: markId,
+                            grade: selectedGrade 
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            console.log(data.data);
+                            // Если оценка удалена, очищаем data-mark-id
+                            if (selectedGrade === '') {
+                                currentCell.removeAttribute('data-mark-id');
+                            }
+                        } else {
+                            console.error('Ошибка:', data.error);
+                        }
+                    })
+                    .catch(error => console.error('Ошибка:', error));
+                }
+                
+                closeModal();
+            });
+
+            // Закрытие модального окна при клике вне его
+            gradeModal.addEventListener('click', (e) => {
+                if (e.target === gradeModal) {
+                    closeModal();
+                }
+            });
+        }
+
+
+
     </script>
 </body>
 </html>

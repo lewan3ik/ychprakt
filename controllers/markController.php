@@ -54,4 +54,80 @@ $result = array_map(function($mark) use ($studentsMap) {
     exit();
     }
 }
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action'])) {
+    $input = json_decode(file_get_contents("php://input"), true);
+    if($_GET['action'] === 'addStudent'){
+        try {
+
+        $newStudent = new markContext(['ID' => null,'FullName'=> $input['name'],
+        'login'=>'','password'=>'','ExpulsionDate'=>$input['date']??null,'GroupID'=>$input['group']]);
+        $newStudent -> add();
+        $resp = [
+            "success" => true,
+            "message" => "Группа успешно добавлена",
+            "data" => $newStudent -> FullName
+        ];
+        echo json_encode($resp);
+    } catch (Exception $e) {
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'error' => 'Ошибка при добавлении группы',
+            'details' => $e->getMessage()
+        ]);
+    }
+    exit();
+    }
+    if($_GET['action'] ==='update'){
+        try {
+        
+        $newStudent = new markContext(['ID' => $input['markId'],'Grade'=> $input['grade']]);
+        $res = $newStudent ->update();
+        $resp = [
+            "success" => true,
+            "message" => "Группа успешно добавлена",
+            "data" => $newStudent -> Grade,
+            "res" => $res
+        ];
+        echo json_encode($resp);
+    } catch (Exception $e) {
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'error' => 'Ошибка при добавлении группы',
+            'details' => $e->getMessage()
+        ]);
+    }
+    exit();
+    }
+    if ($_GET['action'] === 'del') {
+    try {
+
+        if (!isset($input['markId']) || empty($input['markId'])) {
+            throw new Exception('Не указан ID оценки для удаления');
+        }
+        
+        $id = $input['markId'];
+        $resutl = markContext::delete($id);
+        
+        $resp = [
+            "success" => $result,
+            "message" => "Оценка успешно удалена", 
+            "data" => $id
+        ];
+        
+        echo json_encode($resp);
+        
+    } catch (Exception $e) {
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'error' => 'Ошибка при удалении оценки', 
+            'details' => $e->getMessage()
+        ]);
+    }
+    exit();
+}
+}
 ?>

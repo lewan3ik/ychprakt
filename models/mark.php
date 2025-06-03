@@ -12,5 +12,8 @@ class mark{
         $this->Grade = $Grade;
         $this->Date = $Date;
     }
+        public static function createWithIdAndGrade($ID, $Grade) {
+        return new self($ID, null, null, $Grade, null);
+    }
 }
 ?>

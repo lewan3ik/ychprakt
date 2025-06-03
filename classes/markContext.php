@@ -6,13 +6,14 @@ require_once __DIR__.'/../connection/connection.php';
 class markContext extends mark {
     public function __construct(array $data) {
         parent::__construct(
-            $data['ID'],
-            $data['StudentID'],
-            $data['LessonID'],
-            $data['Grade'],
-            $data['Date']
+            $data['ID'] ?? null,
+            $data['StudentID'] ?? null,
+            $data['LessonID'] ?? null,
+            $data['Grade'] ?? null,
+            $data['Date'] ?? null
         );
     }
+
 
     public static function select(): array {
         $allMarks = [];
@@ -56,12 +57,10 @@ class markContext extends mark {
     }
 
     public function update(): bool {
-        $sql = "UPDATE `Grade` SET `StudentID` = ?, `LessonID` = ?, `Grade` = ? WHERE `ID` = ?";
+        $sql = "UPDATE `Grade` SET `Grade` = ? WHERE `ID` = ?";
         $connection = Connection::openConnection();
         $stmt = $connection->prepare($sql);
-        $stmt->bind_param('iiii',
-            $this->StudentID,
-            $this->LessonID,
+        $stmt->bind_param('ii',
             $this->Grade,
             $this->ID
         );
@@ -71,7 +70,7 @@ class markContext extends mark {
         return $result;
     }
 
-    public function delete($delId): bool {
+    public static function delete($delId): bool {
         $sql = "DELETE FROM `Grade` WHERE `ID` = ?";
         $connection = Connection::openConnection();
         $stmt = $connection->prepare($sql);
