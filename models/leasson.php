@@ -6,7 +6,7 @@ class leasson {
     public $loadId;
     public $programmId;
     public function __construct($id, $date, $loadId, $programmId) {
-        $this->id = $id;
+        $this->ID = $id;
         $this->date = $date;
         $this->loadId = $loadId;
         $this->programmId = $programmId;
