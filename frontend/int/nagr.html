@@ -383,6 +383,36 @@
             border-color: var(--blue-color);
             box-shadow: 0 0 0 2px rgba(0, 96, 172, 0.2);
         }
+        .filters {
+    display: flex;
+    gap: 10px;
+}
+
+.filters select {
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid var(--gray-color);
+    background-color: white;
+    min-width: 150px;
+}
+
+@media (max-width: 768px) {
+    .section-actions {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .filters {
+        width: 100%;
+        margin: 10px 0;
+        flex-direction: column;
+    }
+    
+    .filters select {
+        width: 100%;
+    }
+}
+
 
         .form-row {
             display: flex;
@@ -595,17 +625,29 @@
             <!-- Нагрузка -->
             <div class="content-section">
                 <div class="section-header">
-                    <h3 class="section-title">Нагрузка</h3>
-                    <div class="section-actions">
-                        <div class="search-box">
-                            <i class="fas fa-search"></i>
-                            <input type="text" placeholder="Поиск...">
-                        </div>
-                        <button class="btn btn-primary" id="addLoadBtn">
-                            <i class="fas fa-plus"></i> Добавить нагрузку
-                        </button>
-                    </div>
-                </div>
+    <h3 class="section-title">Нагрузка</h3>
+    <div class="section-actions">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Поиск..." id="searchInput">
+        </div>
+        <div class="filters">
+            <select class="form-control" id="teacherFilter">
+                <option value="">Все преподаватели</option>
+            </select>
+            <select class="form-control" id="disciplineFilter">
+                <option value="">Все дисциплины</option>
+            </select>
+            <select class="form-control" id="groupFilter">
+                <option value="">Все группы</option>
+            </select>
+        </div>
+        <button class="btn btn-primary" id="addLoadBtn">
+            <i class="fas fa-plus"></i> Добавить нагрузку
+        </button>
+    </div>
+</div>
+
                 <table>
                     <thead>
                         <tr>
@@ -847,98 +889,106 @@
                 .catch(err => console.error('Failed to fetch groups:', err));
         }
 
-        // Загрузка списка нагрузок
-        function fetchLoads() {
-            fetch(dir + 'LoadController.php?action=get')
-                .then(res => {
-                    if (!res.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return res.json();
-                })
-                .then(list => {
-                    loadsList = list;
-                    const tbody = document.getElementById('loads');
-                    tbody.innerHTML = '';
-                    console.log(list)
+        // Добавьте эту функцию для инициализации фильтров
+function initFilters() {
+    // Заполняем фильтр преподавателей
+    const teacherFilter = document.getElementById('teacherFilter');
+    teachersList.forEach(teacher => {
+        const option = document.createElement('option');
+        option.value = teacher.ID;
+        option.textContent = teacher.FullName;
+        teacherFilter.appendChild(option);
+    });
 
-                    list.forEach(load => {
-                        // Находим преподавателя, дисциплину и группу по ID
-                        const teacher = teachersList.find(t => t.ID == load.TeacherID) || { FullName: 'Неизвестно' };
-                        const discipline = disciplinesList.find(d => d.ID == load.DisciplineID) || { Name: 'Неизвестно' };
-                        const group = groupsList.find(g => g.ID == load.GroupID) || { Name: 'Неизвестно' };
-                        
-                        const row = `
-                            <tr class="elemsList">
-                                <td>${load.ID}</td>
-                                <td>${teacher.FullName}</td>
-                                <td>${discipline.Name}</td>
-                                <td>${group.Name}</td>
-                                <td>${load.Hours}</td>
-                                <td>
-                                    <button class="btn btn-outline">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="btn btn-outline del">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>`;
-                        tbody.insertAdjacentHTML('beforeend', row);
-                    });
+    // Заполняем фильтр дисциплин
+    const disciplineFilter = document.getElementById('disciplineFilter');
+    disciplinesList.forEach(discipline => {
+        const option = document.createElement('option');
+        option.value = discipline.ID;
+        option.textContent = discipline.Name;
+        disciplineFilter.appendChild(option);
+    });
 
-                    // Добавляем обработчики событий для кнопок редактирования и удаления
-                    document.querySelectorAll(".elemsList").forEach((elem) => {
-                        elem.addEventListener("click", (e) => {
-                            if (e.target.classList[0] == "btn" && !e.target.classList.contains('del')) {
-                                // Редактирование нагрузки
-                                const loadId = e.currentTarget.children[0].textContent;
-                                const load = loadsList.find(l => l.ID == loadId);
-                                
-                                if (load) {
-                                    document.querySelector('.modal2').style.display = 'flex';
-                                    document.querySelector('#editLoadId').value = load.ID;
-                                    document.querySelector('#editLoadHours').value = load.Hours;
-                                    
-                                    // Устанавливаем выбранного преподавателя
-                                    const teacherSelect = document.getElementById('editLoadTeacher');
-                                    for (let i = 0; i < teacherSelect.options.length; i++) {
-                                        if (teacherSelect.options[i].value == load.TeacherID) {
-                                            teacherSelect.selectedIndex = i;
-                                            break;
-                                        }
-                                    }
-                                    
-                                    // Устанавливаем выбранную дисциплину
-                                    const disciplineSelect = document.getElementById('editLoadDiscipline');
-                                    for (let i = 0; i < disciplineSelect.options.length; i++) {
-                                        if (disciplineSelect.options[i].value == load.DisciplineID) {
-                                            disciplineSelect.selectedIndex = i;
-                                            break;
-                                        }
-                                    }
-                                    
-                                    // Устанавливаем выбранную группу
-                                    const groupSelect = document.getElementById('editLoadGroup');
-                                    for (let i = 0; i < groupSelect.options.length; i++) {
-                                        if (groupSelect.options[i].value == load.GroupID) {
-                                            groupSelect.selectedIndex = i;
-                                            break;
-                                        }
-                                    }
-                                }
-                            } else if(e.target.classList.contains('del')) {
-                                // Удаление нагрузки
-                                const loadId = e.currentTarget.children[0].textContent;
-                                if(confirm('Вы уверены, что хотите удалить эту нагрузку?')) {
-                                    deleteLoad(loadId);
-                                }
-                            }
-                        });
-                    });
-                })
-                .catch(err => console.error('Failed to fetch loads:', err));
-        }
+    // Заполняем фильтр групп
+    const groupFilter = document.getElementById('groupFilter');
+    groupsList.forEach(group => {
+        const option = document.createElement('option');
+        option.value = group.ID;
+        option.textContent = group.Name;
+        groupFilter.appendChild(option);
+    });
+
+    // Обработчики событий для фильтров
+    document.getElementById('teacherFilter').addEventListener('change', applyFilters);
+    document.getElementById('disciplineFilter').addEventListener('change', applyFilters);
+    document.getElementById('groupFilter').addEventListener('change', applyFilters);
+    document.getElementById('searchInput').addEventListener('input', applyFilters);
+}
+
+// Функция применения фильтров
+function applyFilters() {
+    const teacherValue = document.getElementById('teacherFilter').value;
+    const disciplineValue = document.getElementById('disciplineFilter').value;
+    const groupValue = document.getElementById('groupFilter').value;
+    const searchValue = document.getElementById('searchInput').value.toLowerCase();
+
+    document.querySelectorAll('#loads tr.elemsList').forEach(row => {
+        const teacherMatch = !teacherValue || row.cells[1].textContent === 
+            teachersList.find(t => t.ID == teacherValue)?.FullName;
+        const disciplineMatch = !disciplineValue || row.cells[2].textContent === 
+            disciplinesList.find(d => d.ID == disciplineValue)?.Name;
+        const groupMatch = !groupValue || row.cells[3].textContent === 
+            groupsList.find(g => g.ID == groupValue)?.Name;
+        const searchMatch = !searchValue || 
+            row.cells[1].textContent.toLowerCase().includes(searchValue) ||
+            row.cells[2].textContent.toLowerCase().includes(searchValue) ||
+            row.cells[3].textContent.toLowerCase().includes(searchValue);
+
+        row.style.display = (teacherMatch && disciplineMatch && groupMatch && searchMatch) ? '' : 'none';
+    });
+}
+
+// Обновите функцию fetchLoads, добавив вызов initFilters после загрузки данных
+function fetchLoads() {
+    fetch(dir + 'LoadController.php?action=get')
+        .then(res => res.json())
+        .then(list => {
+            loadsList = list;
+            const tbody = document.getElementById('loads');
+            tbody.innerHTML = '';
+
+            list.forEach(load => {
+                const teacher = teachersList.find(t => t.ID == load.TeacherID) || { FullName: 'Неизвестно' };
+                const discipline = disciplinesList.find(d => d.ID == load.DisciplineID) || { Name: 'Неизвестно' };
+                const group = groupsList.find(g => g.ID == load.GroupID) || { Name: 'Неизвестно' };
+                
+                const row = `
+                    <tr class="elemsList" data-teacher="${teacher.ID}" data-discipline="${discipline.ID}" data-group="${group.ID}">
+                        <td>${load.ID}</td>
+                        <td>${teacher.FullName}</td>
+                        <td>${discipline.Name}</td>
+                        <td>${group.Name}</td>
+                        <td>${load.Hours}</td>
+                        <td>
+                            <button class="btn btn-outline">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-outline del">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>`;
+                tbody.insertAdjacentHTML('beforeend', row);
+            });
+
+            // Инициализируем фильтры после загрузки данных
+            initFilters();
+            
+            // Остальной код обработчиков...
+        })
+        .catch(err => console.error('Failed to fetch loads:', err));
+}
+
 
         // Добавление новой нагрузки
         function addLoad(teacherId, disciplineId, groupId, hours) {
@@ -1033,12 +1083,13 @@
             });
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            // Загружаем данные при загрузке страницы
-            fetchTeachers();
-            fetchDisciplines();
-            fetchGroups();
-            fetchLoads();
+      document.addEventListener('DOMContentLoaded', function() {
+    // Загружаем данные при загрузке страницы
+    fetchTeachers();
+    fetchDisciplines();
+    fetchGroups();
+    fetchLoads();
+
 
             // Обработчик для кнопки добавления нагрузки
             document.getElementById('addLoadBtn').addEventListener('click', function() {
