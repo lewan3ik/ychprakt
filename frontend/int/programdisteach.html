@@ -632,9 +632,6 @@
             <input type="text" placeholder="Поиск по теме..." id="searchInput">
         </div>
         <div class="filters">
-            <select class="form-control" id="disciplineFilter">
-                <option value="">Все дисциплины</option>
-            </select>
             <select class="form-control" id="typeFilter">
                 <option value="">Все типы</option>
                 <option value="lecture">Лекция</option>
@@ -828,32 +825,24 @@
         // Добавьте эту функцию для инициализации фильтров
 function initFilters() {
     // Заполняем фильтр дисциплин
-    const disciplineFilter = document.getElementById('disciplineFilter');
-    disciplinesList.forEach(discipline => {
-        const option = document.createElement('option');
-        option.value = discipline.ID;
-        option.textContent = discipline.Name;
-        disciplineFilter.appendChild(option);
-    });
+
 
     // Обработчики событий для фильтров
-    document.getElementById('disciplineFilter').addEventListener('change', applyFilters);
+
     document.getElementById('typeFilter').addEventListener('change', applyFilters);
     document.getElementById('searchInput').addEventListener('input', applyFilters);
 }
 
 // Функция применения фильтров
 function applyFilters() {
-    const disciplineValue = document.getElementById('disciplineFilter').value;
     const typeValue = document.getElementById('typeFilter').value;
     const searchValue = document.getElementById('searchInput').value.toLowerCase();
 
     document.querySelectorAll('#programs tr.elemsList').forEach(row => {
-        const disciplineMatch = !disciplineValue || row.cells[4].textContent == disciplineValue;
         const typeMatch = !typeValue || row.cells[2].textContent.toLowerCase() == getClassTypeName(typeValue).toLowerCase();
         const searchMatch = !searchValue || row.cells[1].textContent.toLowerCase().includes(searchValue);
 
-        row.style.display = (disciplineMatch && typeMatch && searchMatch) ? '' : 'none';
+        row.style.display = ( typeMatch && searchMatch) ? '' : 'none';
     });
 }
 

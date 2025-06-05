@@ -471,6 +471,46 @@
             background-color: #c01210;
         }
 
+        /* Фильтры */
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-label {
+            font-size: 0.9rem;
+            color: var(--gray-color);
+            margin-bottom: 5px;
+        }
+
+        .filter-select {
+            padding: 8px 12px;
+            border-radius: 4px;
+            border: 1px solid var(--gray-color);
+            min-width: 200px;
+        }
+
+        .reset-filters {
+            margin-left: auto;
+            padding: 8px 16px;
+            background-color: var(--light-gray);
+            border: 1px solid var(--gray-color);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .reset-filters:hover {
+            background-color: #e0e0e0;
+        }
+
         /* Адаптивность */
         @media (max-width: 1200px) {
             .stats-cards {
@@ -520,6 +560,16 @@
             .form-row {
                 flex-direction: column;
                 gap: 0;
+            }
+
+            .filters {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .reset-filters {
+                margin-left: 0;
+                width: 100%;
             }
         }
     </style>
@@ -579,10 +629,6 @@
                     <p>Информация о консультациях</p>
                 </div>
                 <div class="header-actions">
-                    <div class="search-box">
-                        <i class="fas fa-search"></i>
-                        <input type="text" placeholder="Поиск...">
-                    </div>
                     <div class="user-profile">
                         <div class="user-avatar">ИП</div>
                         <div class="user-info">
@@ -598,15 +644,35 @@
                 <div class="section-header">
                     <h3 class="section-title">Консультации</h3>
                     <div class="section-actions">
-                        <div class="search-box">
-                            <i class="fas fa-search"></i>
-                            <input type="text" placeholder="Поиск...">
-                        </div>
                         <button class="btn btn-primary" id="addConsultationBtn">
                             <i class="fas fa-plus"></i> Добавить консультацию
                         </button>
                     </div>
                 </div>
+                
+                <!-- Фильтры -->
+                <div class="filters">
+                    <div class="filter-group">
+                        <span class="filter-label">Преподаватель</span>
+                        <select class="filter-select" id="teacherFilter">
+                            <option value="">Все преподаватели</option>
+                            <!-- Заполнится динамически -->
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <span class="filter-label">Группа</span>
+                        <select class="filter-select" id="groupFilter">
+                            <option value="">Все группы</option>
+                            <!-- Заполнится динамически -->
+                        </select>
+                    </div>
+                    
+                    <button class="reset-filters" id="resetFilters">
+                        <i class="fas fa-times"></i> Сбросить фильтры
+                    </button>
+                </div>
+                
                 <table>
                     <thead>
                         <tr>
@@ -742,36 +808,47 @@
         let studentsList = [];
         let disciplinesList = [];
         let consultationsList = [];
-function fetchGroups() {
-    fetch(dir + 'GroupController.php?action=get')
-        .then(res => {
-            if (!res.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return res.json();
-        })
-        .then(list => {
-             GroupList = list;
+        let teachersList = [];
+
+        function fetchGroups() {
+            fetch(dir + 'GroupController.php?action=get')
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return res.json();
+                })
+                .then(list => {
+                    GroupList = list;
+                    
                     // Заполняем select в модальных окнах
-                    const teacherSelects = [
+                    const groupSelects = [
                         document.getElementById('consultationStudent'),
                         document.getElementById('editConsultationStudent')
                     ];
                     
-                    teacherSelects.forEach(select => {
+                    groupSelects.forEach(select => {
                         select.innerHTML = '';
-                        list.forEach(teacher => {
+                        list.forEach(group => {
                             const option = document.createElement('option');
-                            option.value = teacher.ID;
-                            option.textContent = teacher.Name;
+                            option.value = group.ID;
+                            option.textContent = group.Name;
                             select.appendChild(option);
                         });
                     });
-            
-        })
-        .catch(err => console.error('Failed to fetch students:', err));
-        
-}
+                    
+                    // Заполняем фильтр групп
+                    const groupFilter = document.getElementById('groupFilter');
+                    list.forEach(group => {
+                        const option = document.createElement('option');
+                        option.value = group.ID;
+                        option.textContent = group.Name;
+                        groupFilter.appendChild(option);
+                    });
+                })
+                .catch(err => console.error('Failed to fetch groups:', err));
+        }
+
         function fetchTeachers() {
             fetch(dir + 'TeachersController.php?action=get')
                 .then(res => {
@@ -782,6 +859,7 @@ function fetchGroups() {
                 })
                 .then(list => {
                     teachersList = list;
+                    
                     // Заполняем select в модальных окнах
                     const teacherSelects = [
                         document.getElementById('consultationTeacher'),
@@ -789,17 +867,29 @@ function fetchGroups() {
                     ];
                     
                     teacherSelects.forEach(select => {
-                        select.innerHTML = '';
-                        list.forEach(teacher => {
-                            const option = document.createElement('option');
-                            option.value = teacher.ID;
-                            option.textContent = teacher.FullName;
-                            select.appendChild(option);
-                        });
+                        if (select) {
+                            select.innerHTML = '';
+                            list.forEach(teacher => {
+                                const option = document.createElement('option');
+                                option.value = teacher.ID;
+                                option.textContent = teacher.FullName;
+                                select.appendChild(option);
+                            });
+                        }
+                    });
+                    
+                    // Заполняем фильтр преподавателей
+                    const teacherFilter = document.getElementById('teacherFilter');
+                    list.forEach(teacher => {
+                        const option = document.createElement('option');
+                        option.value = teacher.ID;
+                        option.textContent = teacher.FullName;
+                        teacherFilter.appendChild(option);
                     });
                 })
                 .catch(err => console.error('Failed to fetch teachers:', err));
         }
+
         function fetchConsultations() {
             fetch(dir + 'ConsultationController.php?action=get')
                 .then(res => {
@@ -810,90 +900,103 @@ function fetchGroups() {
                 })
                 .then(list => {
                     consultationsList = list;
-                    const tbody = document.getElementById('consultations');
-                    tbody.innerHTML = '';
-
-                    list.forEach(consultation => {
-                        // Находим преподавателя, студента и дисциплину по ID
-                        const teacher = teachersList.find(t => t.ID == consultation.TeacherID) || { FullName: 'Неизвестно' };
-                        const group = GroupList.find(s => s.ID == consultation.GroupID) || { FullName: 'Неизвестно' };
-                        
-                        // Форматируем дату
-                        
-                        
-                        const row = `
-                            <tr class="elemsList">
-                                <td>${consultation.ID}</td>
-                                <td>${teacher.FullName}</td>
-                                <td>${group.Name}</td>
-                                <td>${consultation.Date}</td>
-                                <td>
-                                    <button class="btn btn-outline">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="btn btn-outline del">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>`;
-                        tbody.insertAdjacentHTML('beforeend', row);
-                    });
-
-                    // Добавляем обработчики событий для кнопок редактирования и удаления
-                    document.querySelectorAll(".elemsList").forEach((elem) => {
-                        elem.addEventListener("click", (e) => {
-                            if (e.target.classList[0] == "btn" && !e.target.classList.contains('del')) {
-                                // Редактирование консультации
-                                const consultationId = e.currentTarget.children[0].textContent;
-                                const consultation = consultationsList.find(c => c.ID == consultationId);
-                                
-                                if (consultation) {
-                                    document.querySelector('.modal2').style.display = 'flex';
-                                    document.querySelector('#editConsultationId').value = consultation.ID;
-                                    
-                                    // Устанавливаем дату и время
-                                    document.querySelector('#editConsultationDate').value = consultation.Date;
-                                    
-                                    // Устанавливаем выбранного преподавателя
-                                    const teacherSelect = document.getElementById('editConsultationTeacher');
-                                    for (let i = 0; i < teacherSelect.options.length; i++) {
-                                        if (teacherSelect.options[i].value == consultation.TeacherID) {
-                                            teacherSelect.selectedIndex = i;
-                                            break;
-                                        }
-                                    }
-                                    
-                                    // Устанавливаем выбранного студента
-                                    const studentSelect = document.getElementById('editConsultationStudent');
-                                    for (let i = 0; i < studentSelect.options.length; i++) {
-                                        if (studentSelect.options[i].value == consultation.StudentID) {
-                                            studentSelect.selectedIndex = i;
-                                            break;
-                                        }
-                                    }
-                                
-                                }
-                            } else if(e.target.classList.contains('del')) {
-                                // Удаление консультации
-                                const consultationId = e.currentTarget.children[0].textContent;
-                                if(confirm('Вы уверены, что хотите удалить эту консультацию?')) {
-                                    deleteConsultation(consultationId);
-                                }
-                            }
-                        });
-                    });
+                    applyFilters();
                 })
                 .catch(err => console.error('Failed to fetch consultations:', err));
         }
 
+        function applyFilters() {
+            const teacherFilter = document.getElementById('teacherFilter').value;
+            const groupFilter = document.getElementById('groupFilter').value;
+            
+            const filteredConsultations = consultationsList.filter(consultation => {
+                const matchesTeacher = !teacherFilter || consultation.TeacherID == teacherFilter;
+                const matchesGroup = !groupFilter || consultation.GroupID == groupFilter;
+                return matchesTeacher && matchesGroup;
+            });
+            
+            renderConsultations(filteredConsultations);
+        }
+
+        function renderConsultations(consultations) {
+            const tbody = document.getElementById('consultations');
+            tbody.innerHTML = '';
+
+            consultations.forEach(consultation => {
+                // Находим преподавателя, группу по ID
+                const teacher = teachersList.find(t => t.ID == consultation.TeacherID) || { FullName: 'Неизвестно' };
+                const group = GroupList.find(g => g.ID == consultation.GroupID) || { Name: 'Неизвестно' };
+                
+                const row = `
+                    <tr class="elemsList">
+                        <td>${consultation.ID}</td>
+                        <td>${teacher.FullName}</td>
+                        <td>${group.Name}</td>
+                        <td>${consultation.Date}</td>
+                        <td>
+                            <button class="btn btn-outline">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-outline del">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>`;
+                tbody.insertAdjacentHTML('beforeend', row);
+            });
+
+            // Добавляем обработчики событий для кнопок редактирования и удаления
+            document.querySelectorAll(".elemsList").forEach((elem) => {
+                elem.addEventListener("click", (e) => {
+                    if (e.target.classList[0] == "btn" && !e.target.classList.contains('del')) {
+                        // Редактирование консультации
+                        const consultationId = e.currentTarget.children[0].textContent;
+                        const consultation = consultationsList.find(c => c.ID == consultationId);
+                        
+                        if (consultation) {
+                            document.querySelector('.modal2').style.display = 'flex';
+                            document.querySelector('#editConsultationId').value = consultation.ID;
+                            
+                            // Устанавливаем дату и время
+                            document.querySelector('#editConsultationDate').value = consultation.Date;
+                            
+                            // Устанавливаем выбранного преподавателя
+                            const teacherSelect = document.getElementById('editConsultationTeacher');
+                            for (let i = 0; i < teacherSelect.options.length; i++) {
+                                if (teacherSelect.options[i].value == consultation.TeacherID) {
+                                    teacherSelect.selectedIndex = i;
+                                    break;
+                                }
+                            }
+                            
+                            // Устанавливаем выбранную группу
+                            const groupSelect = document.getElementById('editConsultationStudent');
+                            for (let i = 0; i < groupSelect.options.length; i++) {
+                                if (groupSelect.options[i].value == consultation.GroupID) {
+                                    groupSelect.selectedIndex = i;
+                                    break;
+                                }
+                            }
+                        }
+                    } else if(e.target.classList.contains('del')) {
+                        // Удаление консультации
+                        const consultationId = e.currentTarget.children[0].textContent;
+                        if(confirm('Вы уверены, что хотите удалить эту консультацию?')) {
+                            deleteConsultation(consultationId);
+                        }
+                    }
+                });
+            });
+        }
+
         // Добавление новой консультации
-        function addConsultation(teacherId, studentId, date) {
+        function addConsultation(teacherId, groupId, date) {
             fetch(dir + 'ConsultationController.php?action=add', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     teacherId: teacherId,
-                    studentId: studentId,
+                    groupId: groupId,
                     date: date
                 })
             })
@@ -917,14 +1020,14 @@ function fetchGroups() {
         }
 
         // Обновление консультации
-        function updateConsultation(id, teacherId, studentId, date) {
+        function updateConsultation(id, teacherId, groupId, date) {
             fetch(dir + 'ConsultationController.php?action=update', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     id: id,
                     teacherId: teacherId,
-                    studentId: studentId,
+                    groupId: groupId,
                     date: date
                 })
             })
@@ -981,6 +1084,15 @@ function fetchGroups() {
             fetchGroups();
             fetchConsultations();
 
+            // Обработчики для фильтров
+            document.getElementById('teacherFilter').addEventListener('change', applyFilters);
+            document.getElementById('groupFilter').addEventListener('change', applyFilters);
+            document.getElementById('resetFilters').addEventListener('click', function() {
+                document.getElementById('teacherFilter').value = '';
+                document.getElementById('groupFilter').value = '';
+                applyFilters();
+            });
+
             // Обработчик для кнопки добавления консультации
             document.getElementById('addConsultationBtn').addEventListener('click', function() {
                 document.getElementById('addConsultationModal').style.display = 'flex';
@@ -989,11 +1101,11 @@ function fetchGroups() {
             // Обработчик для сохранения новой консультации
             document.getElementById('saveConsultationBtn').addEventListener('click', function() {
                 const teacherId = document.getElementById('consultationTeacher').value;
-                const studentId = document.getElementById('consultationStudent').value;
+                const groupId = document.getElementById('consultationStudent').value;
                 const date = document.getElementById('consultationDate').value;
                 
-                if (teacherId && studentId && date) {
-                    addConsultation(teacherId, studentId, date);
+                if (teacherId && groupId && date) {
+                    addConsultation(teacherId, groupId, date);
                 } else {
                     alert('Пожалуйста, заполните все обязательные поля');
                 }
@@ -1003,11 +1115,11 @@ function fetchGroups() {
             document.getElementById('updateConsultationBtn').addEventListener('click', function() {
                 const id = document.getElementById('editConsultationId').value;
                 const teacherId = document.getElementById('editConsultationTeacher').value;
-                const studentId = document.getElementById('editConsultationStudent').value;
+                const groupId = document.getElementById('editConsultationStudent').value;
                 const date = document.getElementById('editConsultationDate').value;
                 
-                if (id && teacherId && studentId && date) {
-                    updateConsultation(id, teacherId, studentId, date);
+                if (id && teacherId && groupId && date) {
+                    updateConsultation(id, teacherId, groupId, date);
                 } else {
                     alert('Пожалуйста, заполните все обязательные поля');
                 }
@@ -1025,4 +1137,4 @@ function fetchGroups() {
         });
     </script>
 </body>
-</html>
+</html>3

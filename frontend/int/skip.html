@@ -278,25 +278,29 @@
             background-color: #c01210;
         }
 
-        .search-box {
-            position: relative;
-            width: 250px;
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
         }
 
-        .search-box input {
-            width: 100%;
-            padding: 8px 15px 8px 35px;
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-group label {
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .filter-select {
+            padding: 8px 12px;
             border-radius: 4px;
             border: 1px solid var(--gray-color);
-            outline: none;
-        }
-
-        .search-box i {
-            position: absolute;
-            left: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--gray-color);
+            min-width: 200px;
         }
 
         table {
@@ -513,13 +517,14 @@
                 gap: 10px;
             }
 
-            .search-box {
-                width: 100%;
-            }
-
             .form-row {
                 flex-direction: column;
                 gap: 0;
+            }
+            
+            .filters {
+                flex-direction: column;
+                align-items: flex-start;
             }
         }
     </style>
@@ -579,10 +584,6 @@
                     <p>Информация о пропусках</p>
                 </div>
                 <div class="header-actions">
-                    <div class="search-box">
-                        <i class="fas fa-search"></i>
-                        <input type="text" placeholder="Поиск...">
-                    </div>
                     <div class="user-profile">
                         <div class="user-avatar">ИП</div>
                         <div class="user-info">
@@ -598,15 +599,33 @@
                 <div class="section-header">
                     <h3 class="section-title">Пропуски</h3>
                     <div class="section-actions">
-                        <div class="search-box">
-                            <i class="fas fa-search"></i>
-                            <input type="text" placeholder="Поиск...">
-                        </div>
                         <button class="btn btn-primary" id="addAbsenceBtn">
                             <i class="fas fa-plus"></i> Добавить пропуск
                         </button>
                     </div>
                 </div>
+                
+                <!-- Фильтры -->
+                <div class="filters">
+                    <div class="filter-group">
+                        <label for="studentFilter">Студент</label>
+                        <select id="studentFilter" class="filter-select">
+                            <option value="">Все студенты</option>
+                            <!-- Заполнится динамически -->
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="lessonFilter">Занятие</label>
+                        <select id="lessonFilter" class="filter-select">
+                            <option value="">Все занятия</option>
+                            <!-- Заполнится динамически -->
+                        </select>
+                    </div>
+                    <button class="btn btn-outline" id="resetFilters">
+                        <i class="fas fa-sync-alt"></i> Сбросить
+                    </button>
+                </div>
+                
                 <table>
                     <thead>
                         <tr>
@@ -735,13 +754,23 @@
                 })
                 .then(list => {
                     studentsList = list;
+                    
                     // Заполняем select в модальных окнах
                     const studentSelects = [
                         document.getElementById('absenceStudent'),
-                        document.getElementById('editAbsenceStudent')
+                        document.getElementById('editAbsenceStudent'),
+                        document.getElementById('studentFilter')
                     ];
-                    studentSelects.forEach(select => {
+                    
+                    studentSelects.forEach((select, index) => {
                         select.innerHTML = '';
+                        if (index === 2) { // Для фильтра добавляем "Все студенты"
+                            const defaultOption = document.createElement('option');
+                            defaultOption.value = '';
+                            defaultOption.textContent = 'Все студенты';
+                            select.appendChild(defaultOption);
+                        }
+                        
                         list.forEach(student => {
                             const option = document.createElement('option');
                             option.value = student.ID;
@@ -764,13 +793,23 @@
                 })
                 .then(list => {
                     lessonsList = list;
+                    
                     // Заполняем select в модальных окнах
                     const lessonSelects = [
                         document.getElementById('absenceLesson'),
-                        document.getElementById('editAbsenceLesson')
+                        document.getElementById('editAbsenceLesson'),
+                        document.getElementById('lessonFilter')
                     ];
-                    lessonSelects.forEach(select => {
+                    
+                    lessonSelects.forEach((select, index) => {
                         select.innerHTML = '';
+                        if (index === 2) { // Для фильтра добавляем "Все занятия"
+                            const defaultOption = document.createElement('option');
+                            defaultOption.value = '';
+                            defaultOption.textContent = 'Все занятия';
+                            select.appendChild(defaultOption);
+                        }
+                        
                         list.forEach(lesson => {
                             const option = document.createElement('option');
                             option.value = lesson.ID;
@@ -793,76 +832,94 @@
                 })
                 .then(list => {
                     skipsList = list;
-                    const tbody = document.getElementById('skips');
-                    tbody.innerHTML = '';
-                    list.forEach(skip => {
-                        // Находим студента и занятие по ID
-                        
-                        const student = studentsList.find(s => s.ID == skip.StudentID) || { FullName: 'Неизвестно' };
-                        const lesson = lessonsList.find(l => l.ID == skip.LessonID) || { Date: 'Неизвестно' };
-                        
-                        const row = `
-                            <tr class="elemsList">
-                                <td>${skip.ID}</td>
-                                <td>${student.FullName}</td>
-                                <td>${lesson.Date}</td>
-                                <td>${skip.Minutes}</td>
-                                <td>${skip.ExplanationFile || 'Нет'}</td>
-                                <td>
-                                    <button class="btn btn-outline">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="btn btn-outline del">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>`;
-                        tbody.insertAdjacentHTML('beforeend', row);
-                    });
-
-                    // Добавляем обработчики событий для кнопок редактирования и удаления
-                    document.querySelectorAll(".elemsList").forEach((elem) => {
-                        elem.addEventListener("click", (e) => {
-                            if (e.target.classList[0] == "btn" && !e.target.classList.contains('del')) {
-                                // Редактирование пропуска
-                                const skipId = e.currentTarget.children[0].textContent;
-                                const skip = skipsList.find(s => s.ID == skipId);
-                                
-                                if (skip) {
-                                    document.querySelector('.modal2').style.display = 'flex';
-                                    document.querySelector('#editAbsenceId').value = skip.ID;
-                                    document.querySelector('#editAbsenceMinutes').value = skip.Minutes;
-                                    document.querySelector('#editAbsenceExplanation').value = skip.ExplanationFile || '';
-                                    
-                                    // Устанавливаем выбранного студента
-                                    const studentSelect = document.getElementById('editAbsenceStudent');
-                                    for (let i = 0; i < studentSelect.options.length; i++) {
-                                        if (studentSelect.options[i].value == skip.StudentID) {
-                                            studentSelect.selectedIndex = i;
-                                            break;
-                                        }
-                                    }
-                                    
-                                    // Устанавливаем выбранное занятие
-                                    const lessonSelect = document.getElementById('editAbsenceLesson');
-                                    for (let i = 0; i < lessonSelect.options.length; i++) {
-                                        if (lessonSelect.options[i].value == skip.LessonID) {
-                                            lessonSelect.selectedIndex = i;
-                                            break;
-                                        }
-                                    }
-                                }
-                            } else if(e.target.classList.contains('del')) {
-                                // Удаление пропуска
-                                const skipId = e.currentTarget.children[0].textContent;
-                                if(confirm('Вы уверены, что хотите удалить этот пропуск?')) {
-                                    deleteSkip(skipId);
-                                }
-                            }
-                        });
-                    });
+                    renderSkipsTable(list);
                 })
                 .catch(err => console.error('Failed to fetch skips:', err));
+        }
+
+        // Функция для отрисовки таблицы пропусков с учетом фильтров
+        function renderSkipsTable(skips) {
+            const studentFilter = document.getElementById('studentFilter').value;
+            const lessonFilter = document.getElementById('lessonFilter').value;
+            
+            // Фильтрация данных
+            let filteredSkips = [...skips];
+            
+            if (studentFilter) {
+                filteredSkips = filteredSkips.filter(skip => skip.StudentID == studentFilter);
+            }
+            
+            if (lessonFilter) {
+                filteredSkips = filteredSkips.filter(skip => skip.LessonID == lessonFilter);
+            }
+            
+            const tbody = document.getElementById('skips');
+            tbody.innerHTML = '';
+            
+            filteredSkips.forEach(skip => {
+                const student = studentsList.find(s => s.ID == skip.StudentID) || { FullName: 'Неизвестно' };
+                const lesson = lessonsList.find(l => l.ID == skip.LessonID) || { Date: 'Неизвестно' };
+                
+                const row = `
+                    <tr class="elemsList">
+                        <td>${skip.ID}</td>
+                        <td>${student.FullName}</td>
+                        <td>${lesson.Date}</td>
+                        <td>${skip.Minutes}</td>
+                        <td>${skip.ExplanationFile || 'Нет'}</td>
+                        <td>
+                            <button class="btn btn-outline">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-outline del">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>`;
+                tbody.insertAdjacentHTML('beforeend', row);
+            });
+
+            // Добавляем обработчики событий для кнопок редактирования и удаления
+            document.querySelectorAll(".elemsList").forEach((elem) => {
+                elem.addEventListener("click", (e) => {
+                    if (e.target.classList[0] == "btn" && !e.target.classList.contains('del')) {
+                        // Редактирование пропуска
+                        const skipId = e.currentTarget.children[0].textContent;
+                        const skip = skipsList.find(s => s.ID == skipId);
+                        
+                        if (skip) {
+                            document.querySelector('.modal2').style.display = 'flex';
+                            document.querySelector('#editAbsenceId').value = skip.ID;
+                            document.querySelector('#editAbsenceMinutes').value = skip.Minutes;
+                            document.querySelector('#editAbsenceExplanation').value = skip.ExplanationFile || '';
+                            
+                            // Устанавливаем выбранного студента
+                            const studentSelect = document.getElementById('editAbsenceStudent');
+                            for (let i = 0; i < studentSelect.options.length; i++) {
+                                if (studentSelect.options[i].value == skip.StudentID) {
+                                    studentSelect.selectedIndex = i;
+                                    break;
+                                }
+                            }
+                            
+                            // Устанавливаем выбранное занятие
+                            const lessonSelect = document.getElementById('editAbsenceLesson');
+                            for (let i = 0; i < lessonSelect.options.length; i++) {
+                                if (lessonSelect.options[i].value == skip.LessonID) {
+                                    lessonSelect.selectedIndex = i;
+                                    break;
+                                }
+                            }
+                        }
+                    } else if(e.target.classList.contains('del')) {
+                        // Удаление пропуска
+                        const skipId = e.currentTarget.children[0].textContent;
+                        if(confirm('Вы уверены, что хотите удалить этот пропуск?')) {
+                            deleteSkip(skipId);
+                        }
+                    }
+                });
+            });
         }
 
         // Добавление нового пропуска
@@ -958,7 +1015,9 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             // Загружаем данные при загрузке страницы
-
+            fetchStudents();
+            fetchLessons();
+            fetchSkips();
 
             // Обработчик для кнопки добавления пропуска
             document.getElementById('addAbsenceBtn').addEventListener('click', function() {
@@ -994,6 +1053,22 @@
                 }
             });
 
+            // Обработчики для фильтров
+            document.getElementById('studentFilter').addEventListener('change', function() {
+                renderSkipsTable(skipsList);
+            });
+            
+            document.getElementById('lessonFilter').addEventListener('change', function() {
+                renderSkipsTable(skipsList);
+            });
+            
+            // Обработчик для кнопки сброса фильтров
+            document.getElementById('resetFilters').addEventListener('click', function() {
+                document.getElementById('studentFilter').value = '';
+                document.getElementById('lessonFilter').value = '';
+                renderSkipsTable(skipsList);
+            });
+
             // Закрытие модальных окон
             const closeModalButtons = document.querySelectorAll('.close-modal, .btn-outline');
             closeModalButtons.forEach(button => {
@@ -1003,9 +1078,6 @@
                     });
                 });
             });
-                        fetchStudents();
-            fetchLessons();
-            fetchSkips();
         });
     </script>
 </body>
